@@ -119,6 +119,25 @@ body {
   }
 }
 
+/* Mobile: Full-width torrent details panel */
+@media (max-width: 720px) {
+  .application {
+    &__panel {
+      &--torrent-list {
+        &.is-open {
+          transform: translateX(100%);
+        }
+      }
+
+      &--torrent-details {
+        right: 0;
+        width: 100%;
+        z-index: 100;
+      }
+    }
+  }
+}
+
 /* Mobile drawer overrides */
 @media (max-width: 720px) {
   // Sidebar closed (alternative state not active)

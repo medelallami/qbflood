@@ -27,8 +27,8 @@ import type {TransferSummary} from '@shared/types/TransferData';
 import type TypedEmitter from 'typed-emitter';
 
 import config from '../../config';
-import type {ServiceInstances} from '.';
 import type {SearchTorrentResult} from '../../types/Search';
+import type {ServiceInstances} from '.';
 import BaseService from './BaseService';
 
 type ClientGatewayServiceEvents = {
@@ -205,8 +205,7 @@ export interface ClientGatewayService extends TypedEmitter<ClientGatewayServiceE
    * @param params - Search parameters
    * @return - Resolves with an array of search results or rejects with error.
    */
-  searchTorrents(params: { pattern: string; plugin: string; category?: string }): Promise<SearchTorrentResult[]>;
-
+  searchTorrents(params: {pattern: string; plugin: string; category?: string}): Promise<SearchTorrentResult[]>;
 
   /**
    * Gets session directory (where .torrent files are stored) of the torrent client

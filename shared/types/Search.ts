@@ -1,5 +1,5 @@
-import {strictObject, string, number, array} from 'zod';
 import type {zodInfer} from 'zod';
+import {array, number, strictObject, string} from 'zod';
 
 export const searchTorrentResultSchema = strictObject({
   filename: string(),

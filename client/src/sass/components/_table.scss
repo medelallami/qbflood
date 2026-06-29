@@ -154,3 +154,32 @@ $table--heading--resize--indicator--width: 1px;
     padding: 0 8px;
   }
 }
+
+/* Mobile: Hide less important columns */
+@media (max-width: 720px) {
+  .table {
+    &__heading,
+    &__cell {
+      /* Hide these columns on mobile */
+      &--eta,
+      &--priority,
+      &--peers,
+      &--seeds {
+        display: none !important;
+      }
+    }
+
+    &__row {
+      &--heading {
+        font-size: 11px;
+        height: 20px;
+        min-height: 20px;
+      }
+    }
+
+    &__cell {
+      padding: 0 4px;
+      font-size: 12px;
+    }
+  }
+}

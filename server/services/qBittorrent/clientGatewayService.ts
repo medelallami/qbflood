@@ -29,10 +29,9 @@ import type {TorrentContent} from '@shared/types/TorrentContent';
 import type {TorrentPeer} from '@shared/types/TorrentPeer';
 import type {TorrentTracker} from '@shared/types/TorrentTracker';
 import type {TransferSummary} from '@shared/types/TransferData';
-import type {SearchTorrentResult} from ""../../../shared/types/Search"";
-import type {SearchTorrentResult} from "\x27../../../shared/types/Search\x27";
 import parseTorrent from 'parse-torrent';
 
+import type {SearchTorrentResult} from '../../../shared/types/Search';
 import {TorrentPriority} from '../../../shared/types/Torrent';
 import {TorrentContentPriority} from '../../../shared/types/TorrentContent';
 import {TorrentTrackerType} from '../../../shared/types/TorrentTracker';
@@ -496,6 +495,8 @@ class QBittorrentClientGatewayService extends BaseClientGatewayService implement
           upTotal: info.up_info_data,
         };
       });
+  }
+
   /**
    * Gets available search plugins from the torrent client
    *
@@ -513,16 +514,10 @@ class QBittorrentClientGatewayService extends BaseClientGatewayService implement
    * @param params - Search parameters
    * @return - Resolves with an array of search results or rejects with error.
    */
-  searchTorrents(params: {
-    pattern: string;
-    plugin: string;
-    category?: string;
-  }): Promise<SearchTorrentResult[]> {
+  searchTorrents(params: {pattern: string; plugin: string; category?: string}): Promise<SearchTorrentResult[]> {
     return this.clientRequestManager
       .searchTorrents(params)
       .then(this.processClientRequestSuccess, this.processClientRequestError);
-  }
-
   }
 
   async getClientSessionDirectory(): Promise<{path: string; case: 'lower' | 'upper'}> {

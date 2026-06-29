@@ -200,6 +200,34 @@
   }
 }
 
+/* Mobile: Better spacing for touch */
+@media (max-width: 720px) {
+  .sidebar {
+    &__icon-button {
+      padding: 16px !important;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    &__actions {
+      padding: 16px !important;
+    }
+  }
+
+  .diskusage {
+    &__details-list {
+      flex-direction: column;
+
+      &__item {
+        & + .diskusage__details-list__item {
+          margin-left: 0;
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+}
+
 .dropdown {
   &--speed-limits {
     .dropdown {

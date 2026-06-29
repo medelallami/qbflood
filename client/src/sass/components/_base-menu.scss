@@ -1,0 +1,100 @@
+@use 'sass:color';
+
+@use '../tools/colors';
+
+$menu--background: rgba(#fff, 0.98);
+$menu--container--border: rgba(colors.$sidebar--background, 0.075);
+$menu--container--shadow: rgba(colors.$sidebar--background, 0.15);
+$menu--label: #abbac7;
+$menu--value: #8899a8;
+$menu--value--active: #4e6a7c;
+$menu--header--border: rgba(colors.$sidebar--background, 0.05);
+$menu--item--background--hover: rgba(colors.$main-content--background, 0.4);
+$menu--item--foreground: #526780;
+$menu--item--foreground--hover: color.adjust($menu--item--foreground, $lightness: -10%);
+$menu--item--secondary--foreground: color.adjust($menu--item--foreground, $lightness: 20%);
+$menu--item--foreground--active: colors.$blue;
+$menu--item--separator--background: $menu--container--border;
+
+.menu {
+  background: $menu--background;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px $menu--container--border, 0 1px 4px $menu--container--shadow,
+    0 3px 15px $menu--container--shadow;
+  color: $menu--item--foreground;
+  text-align: left;
+
+  &__item {
+    > button {
+      height: 100%;
+      width: 100%;
+      text-align: left;
+      font-size: 0.9em;
+      padding: 5px 15px;
+      &:disabled {
+        pointer-events: none;
+      }
+    }
+
+    &__label {
+      &--primary {
+        &.has-action {
+          display: flex;
+
+          .menu {
+            &__item {
+              &__label {
+                flex: 1 1 auto;
+
+                &__action {
+                  flex: 0 0 auto;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &--secondary {
+        color: $menu--item--secondary--foreground;
+        display: block;
+        font-size: 0.85em;
+      }
+    }
+
+    &--separator {
+      background: $menu--item--separator--background;
+      height: 1px;
+      margin: 5px 0;
+      padding: 0;
+    }
+
+    &.is-selectable {
+      display: block;
+      transition: background 0.25s, color 0.25s;
+
+      > button {
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      &:focus-within,
+      &:hover {
+        background: $menu--item--background--hover;
+        color: $menu--item--foreground--hover;
+      }
+
+      &.is-selected {
+        color: $menu--item--foreground--active;
+      }
+    }
+  }
+
+  &-enter {
+    animation: fade-in 0.25s both;
+  }
+
+  &-exit {
+    animation: fade-out 0.25s both;
+  }
+}

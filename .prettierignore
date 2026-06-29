@@ -1,0 +1,16 @@
+# Distribution files
+dist/
+dist-pkg/
+
+# Coverage reports
+coverage/
+pnpm-lock.yaml
+
+## Panda
+client/src/javascript/styled-system/
+
+# Storybook
+css-snapshots/
+*storybook.log
+storybook-static
+.codex

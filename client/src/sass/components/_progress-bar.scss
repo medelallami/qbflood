@@ -1,0 +1,200 @@
+@use '../tools/colors';
+@use '../tools/themes';
+
+@keyframes candy-stripe {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 4px 0;
+  }
+}
+
+$progress-bar--height: 3px;
+
+.progress-bar {
+  align-items: center;
+  display: flex;
+  width: 100%;
+  z-index: 1;
+
+  &__icon {
+    flex: 0 0 auto;
+    padding-right: 5px;
+
+    .icon {
+      color: colors.$green;
+      display: block;
+      fill: currentColor;
+      height: 12px;
+      transition: opacity 0.15s;
+      width: 12px;
+
+      .torrent--is-seeding & {
+        @include themes.theme('color', 'progress-bar--fill--completed');
+      }
+
+      .torrent--is-stopped & {
+        @include themes.theme('color', 'progress-bar--fill--stopped');
+      }
+
+      .torrent--has-error & {
+        @include themes.theme('color', 'progress-bar--fill--error');
+      }
+
+      .torrent--has-warning & {
+        @include themes.theme('color', 'progress-bar--fill--warning');
+      }
+
+      .torrent--is-checking & {
+        @include themes.theme('color', 'progress-bar--fill--checking');
+      }
+
+      .torrent--is-selected & {
+        @include themes.theme('color', 'progress-bar--fill--selected');
+      }
+
+      .torrent--is-selected.torrent--is-stopped & {
+        @include themes.theme('color', 'progress-bar--fill--selected--stopped');
+      }
+
+      .torrent--has-error.torrent--is-stopped & {
+        @include themes.theme('color', 'progress-bar--fill--error--stopped');
+      }
+
+      .torrent--has-warning.torrent--is-stopped & {
+        @include themes.theme('color', 'progress-bar--fill--warning--stopped');
+      }
+    }
+  }
+
+  &__fill {
+    @include themes.theme('background', 'progress-bar--fill');
+    display: block;
+    height: $progress-bar--height;
+    width: 100%;
+
+    .torrent--is-seeding & {
+      @include themes.theme('background', 'progress-bar--fill--completed');
+    }
+
+    .torrent--is-stopped & {
+      @include themes.theme('background', 'progress-bar--fill--stopped');
+    }
+
+    .torrent--has-error & {
+      @include themes.theme('background', 'progress-bar--fill--error');
+    }
+
+    .torrent--has-warning & {
+      @include themes.theme('background', 'progress-bar--fill--warning');
+    }
+
+    .torrent--is-checking & {
+      @include themes.theme('background', 'progress-bar--fill--checking');
+    }
+
+    .torrent--is-selected & {
+      @include themes.theme('background', 'progress-bar--fill--selected');
+    }
+
+    .torrent--is-selected.torrent--is-stopped & {
+      @include themes.theme('background', 'progress-bar--fill--selected--stopped');
+    }
+
+    .torrent--has-error.torrent--is-stopped & {
+      @include themes.theme('background', 'progress-bar--fill--error--stopped');
+    }
+
+    .torrent--has-warning.torrent--is-stopped & {
+      @include themes.theme('background', 'progress-bar--fill--warning--stopped');
+    }
+
+    &__wrapper {
+      @include themes.theme('background', 'progress-bar--track--background');
+      flex: 1 1 auto;
+      position: relative;
+      height: $progress-bar--height;
+
+      .torrent--is-stopped & {
+        @include themes.theme('background', 'progress-bar--track--background--stopped');
+      }
+
+      .torrent--has-error & {
+        @include themes.theme('background', 'progress-bar--track--background--error');
+      }
+
+      .torrent--has-warning & {
+        @include themes.theme('background', 'progress-bar--track--background--warning');
+      }
+
+      .torrent--is-selected & {
+        @include themes.theme('background', 'progress-bar--track--background--selected');
+      }
+
+      .torrent--has-error.torrent--is-stopped & {
+        @include themes.theme('background', 'progress-bar--track--background--error--stopped');
+      }
+
+      .torrent--has-warning.torrent--is-stopped & {
+        @include themes.theme('background', 'progress-bar--track--background--warning--stopped');
+      }
+
+      .torrent--is-selected.torrent--is-stopped & {
+        @include themes.theme('background', 'progress-bar--track--background--selected--stopped');
+        opacity: 1;
+      }
+
+      .torrent--is-checking & {
+        animation: candy-stripe 0.25s linear infinite;
+        background-color: transparent !important;
+        background-image: linear-gradient(
+          -45deg,
+          rgba(rgba(#8899a8, 0.15), 0) 0,
+          rgba(rgba(#8899a8, 0.15), 0) 25%,
+          rgba(rgba(#8899a8, 0.15), 0.5) 25%,
+          rgba(rgba(#8899a8, 0.15), 0.5) 50%,
+          rgba(rgba(#8899a8, 0.15), 0) 50%,
+          rgba(rgba(#8899a8, 0.15), 0) 75%,
+          rgba(rgba(#8899a8, 0.15), 0.5) 75%,
+          rgba(rgba(#8899a8, 0.15), 0.5) 100%
+        );
+        background-size: 4px 4px !important;
+        height: $progress-bar--height;
+        top: 0;
+      }
+
+      .torrent--is-selected.torrent--is-checking & {
+        background-image: linear-gradient(
+          -45deg,
+          rgba(#fff, 0) 0,
+          rgba(#fff, 0) 25%,
+          rgba(#fff, 0.5) 25%,
+          rgba(#fff, 0.5) 50%,
+          rgba(#fff, 0) 50%,
+          rgba(#fff, 0) 75%,
+          rgba(#fff, 0.5) 75%,
+          rgba(#fff, 0.5) 100%
+        );
+      }
+    }
+  }
+
+  &__percent {
+    @include themes.theme('color', 'torrent-list--background');
+    font-size: 0.7rem;
+    font-weight: 600;
+    left: 50%;
+    line-height: 1;
+    pointer-events: none;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+
+    .torrent--is-selected & {
+      @include themes.theme('color', 'torrent--background--selected');
+    }
+  }
+}

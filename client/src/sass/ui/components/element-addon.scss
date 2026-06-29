@@ -1,0 +1,110 @@
+@use '../../tools/colors';
+
+@use '../config/speed.scss';
+@use '../config/variables.scss';
+
+@use './icon.scss';
+
+.form {
+  &__element {
+    &--has-addon {
+      &--placed-before {
+        padding-left: variables.$button--has-addon--padding--left;
+
+        &.form__element--has-addon--count-2 {
+          padding-left: variables.$button--has-two-addons--padding--left;
+        }
+      }
+
+      &--placed-after {
+        padding-right: variables.$button--has-addon--padding--right;
+
+        &.form__element--has-addon--count-2 {
+          padding-right: variables.$button--has-two-addons--padding--right;
+        }
+      }
+    }
+
+    &__addon {
+      border-width: 0;
+      border-style: solid;
+      border-color: colors.$grey--soft;
+      bottom: 0;
+      pointer-events: none;
+      position: absolute;
+      transition: all speed.$speed--x-fast;
+      top: 0;
+
+      .inverse & {
+        border-color: colors.$darkest-grey--darker;
+      }
+
+      .form__element:focus ~ &,
+      .form__element:active ~ & {
+        border-color: rgba(colors.$blue, 0.15);
+        transition: all speed.$speed--xx-fast;
+
+        .icon {
+          fill: colors.$blue;
+          transition: all speed.$speed--xx-fast;
+
+          &--stroke {
+            fill: none;
+            stroke: colors.$blue;
+          }
+        }
+      }
+
+      .icon {
+        @extend .icon--small;
+        fill: colors.$grey;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform-origin: 50% 50%;
+        transform: translate(-50%, -50%);
+        transition: all speed.$speed--x-fast;
+
+        &--stroke {
+          fill: none;
+          stroke: colors.$grey;
+        }
+      }
+
+      &--placed-before {
+        border-right-width: 1px;
+        left: 0;
+
+        &.form__element__addon--index-2 {
+          left: variables.$button--addon--width;
+        }
+      }
+
+      &--placed-after {
+        border-left-width: 1px;
+        right: 0;
+
+        &.form__element__addon--index-2 {
+          right: variables.$button--addon--width;
+        }
+      }
+
+      &--is-icon {
+        width: variables.$button--addon--width;
+      }
+
+      &--is-interactive {
+        cursor: pointer;
+        pointer-events: auto;
+
+        &:focus,
+        &:hover {
+          .icon {
+            fill: colors.$blue;
+            transition: all speed.$speed--xx-fast;
+          }
+        }
+      }
+    }
+  }
+}

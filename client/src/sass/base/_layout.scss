@@ -1,0 +1,166 @@
+@use '../tools/variables';
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.container {
+  height: 100%;
+  width: 100%;
+}
+
+#app,
+.application,
+.application__view {
+  height: 100%;
+  width: 100%;
+}
+
+.application {
+  &,
+  &__view {
+    align-content: center;
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+
+    &--sidebar-alternative-state {
+      .application__sidebar {
+        flex: 0 0 0;
+        min-width: 0;
+        max-width: 0;
+        width: 0;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      @media (max-width: 720px) {
+        .application__sidebar {
+          display: flex;
+          flex: 1;
+          min-width: 240px;
+          max-width: 250px;
+          width: auto;
+          overflow: visible;
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateX(120px);
+          z-index: unset;
+        }
+
+        .application__content {
+          transform: translateX(120px);
+
+          .modal {
+            transform: translateX(-240px);
+          }
+
+          .context-menu__items {
+            transform: translateX(-240px);
+          }
+
+          .alerts__list {
+            transform: translateX(-240px);
+          }
+
+          .table__heading__resize-line {
+            left: -240px;
+          }
+        }
+      }
+    }
+  }
+
+  &__content {
+    align-items: center;
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    position: relative;
+    min-width: 60px;
+    transition: transform 0.2s;
+
+    @media (max-width: 720px) {
+      width: 100vw;
+      transform: translateX(-120px);
+    }
+  }
+
+  &__panel {
+    display: flex;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &--torrent-list {
+      transition: transform 0.5s;
+      z-index: 2;
+
+      &.is-open {
+        transform: translateX(variables.$torrent-details--width);
+      }
+    }
+
+    &--torrent-details {
+      right: 100% - variables.$torrent-details--width;
+      width: variables.$torrent-details--width;
+      z-index: 1;
+    }
+  }
+}
+
+/* Mobile drawer overrides */
+@media (max-width: 720px) {
+  // Sidebar closed (alternative state not active)
+  .application__view:not(.application__view--sidebar-alternative-state) {
+    .application__sidebar {
+      // Hide it and take no space
+      flex: 0 0 0;
+      width: 0;
+      overflow: hidden;
+      // Translate it completely to the left so it's not visible
+      transform: translateX(-100%);
+    }
+
+    .application__content {
+      // When sidebar is closed, content takes full width and no transform
+      width: 100vw;
+      transform: translateX(0);
+    }
+  }
+
+  // Sidebar open (alternative state active)
+  .application__view.application__view--sidebar-alternative-state {
+    .application__sidebar {
+      // Override the hidden state from the outer rule: set to visible width
+      // Note: the outer rule (application__view--sidebar-alternative-state) sets flex:0 0 0, width:0, etc.
+      // We want to override those for the sidebar to be visible.
+      flex: 0 0 auto;
+      width: auto;
+      min-width: 240px;
+      max-width: 250px;
+      overflow: visible;
+      opacity: 1;
+      pointer-events: auto;
+      // Reset the transform to 0 (so it's at the left edge)
+      transform: translateX(0);
+      z-index: 1000;
+      position: relative;
+    }
+
+    .application__content {
+      // Push the content to the right by the width of the sidebar
+      transform: translateX(240px);
+    }
+  }
+}

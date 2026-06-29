@@ -1,0 +1,9 @@
+@use '../tools/colors';
+
+body {
+  background: colors.$background;
+}
+
+ul {
+  list-style: none;
+}

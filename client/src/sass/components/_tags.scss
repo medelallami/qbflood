@@ -1,0 +1,17 @@
+@use 'sass:math';
+
+@use '../tools/variables';
+
+$tag--background: rgba(#4a596d, 0.75);
+$tag--foreground: #1a2028;
+
+.tag {
+  background: $tag--background;
+  border-radius: 30px;
+  color: $tag--foreground;
+  display: inline-block;
+  font-size: 0.9em;
+  margin-right: math.div(variables.$spacing-unit * 1, 5);
+  padding: 0 math.div(variables.$spacing-unit * 2, 5);
+  white-space: nowrap;
+}

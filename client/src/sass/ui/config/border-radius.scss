@@ -1,0 +1,5 @@
+@use './spacing.scss';
+
+$border-radius--large: spacing.$spacing--small;
+$border-radius--medium: spacing.$spacing--xx-small + 1;
+$border-radius--small: spacing.$spacing--xx-small;

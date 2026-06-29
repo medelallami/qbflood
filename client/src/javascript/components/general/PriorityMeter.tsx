@@ -1,0 +1,106 @@
+import React, {FC, ReactNode, useState} from 'react';
+import {useLingui} from '@lingui/react';
+import {css} from '@client/styled-system/css';
+
+import PriorityLevels from '../../constants/PriorityLevels';
+
+interface PriorityMeterProps {
+  id: string | number;
+  level: number;
+  maxLevel: number;
+  priorityType: keyof typeof PriorityLevels;
+  showLabel?: boolean;
+  clickHandled?: boolean;
+  changePriorityFuncRef?: React.MutableRefObject<() => number>;
+  onChange: (id: this['id'], level: this['level']) => void;
+}
+
+const PriorityMeter: FC<PriorityMeterProps> = ({
+  id,
+  level,
+  maxLevel,
+  priorityType,
+  showLabel = false,
+  clickHandled = false,
+  changePriorityFuncRef,
+  onChange,
+}: PriorityMeterProps) => {
+  const {i18n} = useLingui();
+  const [priorityLevel, setPriorityLevel] = useState<number>(level);
+
+  const changePriority = () => {
+    let newLevel = priorityLevel;
+
+    if (newLevel >= maxLevel) {
+      newLevel = 0;
+    } else {
+      newLevel += 1;
+    }
+
+    setPriorityLevel(newLevel);
+    onChange(id, newLevel);
+
+    return newLevel;
+  };
+
+  if (changePriorityFuncRef != null) {
+    changePriorityFuncRef.current = changePriority;
+  }
+
+  let labelElement: ReactNode;
+  if (showLabel) {
+    const priorityLevels = PriorityLevels[priorityType];
+
+    let priorityLabelElement: ReactNode;
+    switch (priorityLevels[priorityLevel as keyof typeof priorityLevels]) {
+      case 'DONT_DOWNLOAD':
+        priorityLabelElement = i18n._('priority.dont.download');
+        break;
+      case 'HIGH':
+        priorityLabelElement = i18n._('priority.high');
+        break;
+      case 'LOW':
+        priorityLabelElement = i18n._('priority.low');
+        break;
+      default:
+        priorityLabelElement = i18n._('priority.normal');
+        break;
+    }
+
+    labelElement = <span className="priority-meter__label">{priorityLabelElement}</span>;
+  }
+
+  const levelElement = (
+    <div className={`priority-meter priority-meter--max-${maxLevel} priority-meter--level-${priorityLevel}`} />
+  );
+
+  const styles = css({
+    _focus: {
+      outline: 'none',
+      WebkitTapHighlightColor: 'transparent',
+    },
+    _focusVisible: {
+      outline: 'dashed',
+    },
+  });
+
+  return clickHandled ? (
+    <div className={`priority-meter__wrapper ${styles}`}>
+      {levelElement}
+      {labelElement}
+    </div>
+  ) : (
+    <button
+      className={`priority-meter__wrapper ${styles}`}
+      type="button"
+      onClick={() => {
+        changePriority();
+      }}
+    >
+      {levelElement}
+      {labelElement}
+    </button>
+  );
+};
+
+export default PriorityMeter;

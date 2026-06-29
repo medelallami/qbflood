@@ -1,0 +1,225 @@
+@use 'sass:math';
+
+@use '../tools/colors';
+@use '../tools/themes';
+@use '../tools/variables';
+
+.os-theme-thin {
+  &.os-scrollbar {
+    .os-scrollbar-track {
+      background: transparent;
+    }
+
+    .os-scrollbar-track:before {
+      content: '';
+      display: block;
+      position: absolute;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .os-scrollbar-handle:before {
+      content: '';
+      display: block;
+      position: absolute;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+    }
+
+    .os-scrollbar-handle:hover:before,
+    .os-scrollbar-handle.active:before {
+      background: #fff;
+    }
+  }
+
+  &.os-scrollbar-horizontal {
+    right: 14px;
+    height: 14px;
+    padding: 0px 6px;
+
+    &.os-scrollbar-rtl {
+      left: 14px;
+      right: 0;
+    }
+
+    .os-scrollbar-track:before,
+    .os-scrollbar-handle:before {
+      left: 0;
+      right: 0;
+      height: 2px;
+      top: 50%;
+      margin-top: -1px;
+    }
+
+    .os-scrollbar-handle:hover:before,
+    .os-scrollbar-handle.active:before {
+      height: 4px;
+      margin-top: -2px;
+    }
+
+    .os-scrollbar-handle {
+      height: 100%;
+      min-width: 30px;
+    }
+  }
+
+  &.os-scrollbar-vertical {
+    bottom: 14px;
+    width: 14px;
+    padding: 6px 0px;
+
+    .os-scrollbar-track:before,
+    .os-scrollbar-handle:before {
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      left: 50%;
+      margin-left: -1px;
+    }
+
+    .os-scrollbar-handle:hover:before,
+    .os-scrollbar-handle.active:before {
+      width: 4px;
+      margin-left: -2px;
+    }
+
+    .os-scrollbar-handle {
+      width: 100%;
+      min-height: 30px;
+    }
+  }
+}
+
+.application {
+  &__sidebar {
+    @include themes.theme('background', 'sidebar--background');
+    @include themes.theme('box-shadow', 'sidebar--border');
+    @include themes.theme('color', 'sidebar--foreground');
+    flex: 1;
+    min-width: 240px;
+    max-width: 250px;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.2s;
+
+    @media (max-width: 720px) {
+      transform: translateX(-120px);
+    }
+  }
+}
+
+.sidebar {
+  &__icon-button {
+    @include themes.theme('color', 'sidebar--icon-button--foreground');
+    display: block;
+    font-size: 0.8em;
+    line-height: 1;
+    padding: math.div(variables.$spacing-unit * 2, 5);
+    position: relative;
+    transition: color 0.25s;
+
+    &:focus-visible,
+    &:hover {
+      @include themes.theme('color', 'sidebar--icon-button--foreground--hover');
+
+      .icon {
+        @include themes.theme('fill', 'sidebar--icon-button--fill--hover');
+      }
+    }
+
+    &--interactive {
+      cursor: pointer;
+    }
+
+    .icon {
+      @include themes.theme('fill', 'sidebar--icon-button--fill');
+      height: 13px;
+      transition: fill 0.25s;
+      position: relative;
+      top: -1px;
+      vertical-align: middle;
+      width: 13px;
+    }
+  }
+
+  &__action {
+    &--last {
+      margin-left: auto;
+    }
+  }
+
+  &__actions {
+    min-height: max-content;
+    display: flex;
+    padding: math.div(variables.$spacing-unit * 1, 5);
+    justify-content: flex-start;
+  }
+
+  &__diskusage {
+    .progress-bar__icon {
+      display: none;
+    }
+    .progress-bar__fill__wrapper {
+      @include themes.theme('background', 'sidebar-filter--foreground--fill');
+    }
+    .progress-bar__fill {
+      @include themes.theme('background', 'sidebar-filter--foreground');
+    }
+  }
+}
+
+.diskuage__size-avail {
+  margin-left: 1em;
+}
+
+.diskusage__text-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.diskusage {
+  &__item {
+    width: 100%;
+  }
+
+  &__details-list {
+    display: flex;
+
+    &__item {
+      & + .diskusage__details-list__item {
+        margin-left: 10px;
+      }
+    }
+
+    &__label {
+      color: colors.$dark-grey;
+      display: block;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+  }
+}
+
+.dropdown {
+  &--speed-limits {
+    .dropdown {
+      &__content {
+        min-width: 180px;
+
+        .sidebar {
+          &__icon-button {
+            padding: math.div(variables.$spacing-unit * 2, 5);
+
+            .icon {
+              margin-right: math.div(variables.$spacing-unit * 1, 5);
+            }
+          }
+        }
+      }
+
+      &__items {
+        font-size: 0.9em;
+      }
+    }
+  }
+}

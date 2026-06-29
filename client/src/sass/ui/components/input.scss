@@ -1,0 +1,234 @@
+@use 'sass:color';
+
+@use '../../tools/colors';
+
+@use '../config/spacing.scss';
+@use '../config/speed.scss';
+@use '../config/variables.scss';
+
+.input {
+  background: variables.$input--background;
+  color: variables.$input--foreground;
+  border: variables.$form--element--border-width solid variables.$input--border;
+  box-shadow: variables.$form--element--box-shadow;
+
+  &::placeholder {
+    color: variables.$input--foreground--placeholder;
+    transition: color speed.$speed--xx-fast;
+  }
+
+  &:hover {
+    border-color: variables.$input--border--hover;
+    color: variables.$input--foreground--hover;
+
+    &::placeholder {
+      color: variables.$input--foreground--placeholder--hover;
+    }
+  }
+
+  &:active,
+  &:focus {
+    background-color: colors.$blue--soft;
+    color: color.adjust(colors.$blue--darker, $saturation: -25%);
+    border-color: colors.$blue;
+    box-shadow: form--element--box-shadow--active(colors.$blue);
+
+    &::placeholder {
+      color: rgba(colors.$blue--light, 0.5);
+    }
+  }
+
+  .inverse & {
+    background: variables.$input--inverse--background;
+    border: variables.$form--element--border-width solid variables.$input--inverse--border;
+    box-shadow: variables.$form--element--inverse--box-shadow;
+    color: variables.$input--inverse--foreground;
+
+    &::placeholder {
+      color: variables.$input--inverse--foreground--placeholder;
+    }
+
+    &:hover {
+      border-color: variables.$input--inverse--border--hover;
+      color: variables.$input--inverse--foreground--hover;
+
+      &::placeholder {
+        color: variables.$input--inverse--foreground--placeholder--hover;
+      }
+    }
+
+    &:active,
+    &:focus {
+      background-color: rgba(colors.$blue--soft, 0.15);
+      color: variables.$input--inverse--foreground--active;
+      border-color: colors.$blue;
+      box-shadow: form--element--box-shadow--active(colors.$blue);
+
+      &::placeholder {
+        color: variables.$input--inverse--foreground--placeholder--active;
+      }
+    }
+  }
+
+  &--hidden {
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+  }
+}
+
+.toggle-input {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  outline: none;
+  padding: variables.$form--element--padding--y 0 variables.$form--element--padding--y variables.$toggle-input--width +
+    spacing.$spacing--x-small;
+  position: relative;
+  transition: all speed.$speed--x-fast;
+  user-select: none;
+
+  &:hover {
+    transition: all speed.$speed--xx-fast;
+
+    .toggle-input {
+      &__indicator {
+        border-color: variables.$input--border--hover;
+
+        .inverse & {
+          border-color: variables.$input--inverse--border--hover;
+        }
+
+        &,
+        &__icon {
+          transition: all speed.$speed--xx-fast;
+        }
+
+        &__icon {
+          &,
+          .icon {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
+  &:focus,
+  &:active {
+    color: colors.$blue;
+
+    .toggle-input {
+      &__indicator {
+        border-color: colors.$blue;
+        box-shadow: form--element--box-shadow--active(colors.$blue);
+
+        .inverse & {
+          border-color: colors.$blue;
+          box-shadow: form--element--box-shadow--active(colors.$blue);
+        }
+
+        &,
+        &__icon {
+          transition: all speed.$speed--xx-fast;
+
+          .icon {
+            fill: colors.$blue;
+          }
+        }
+      }
+    }
+  }
+
+  &:active,
+  &--is-active {
+    .toggle-input {
+      &__indicator {
+        background-color: rgba(colors.$blue, 0.1);
+        color: rgba(colors.$blue, 0.8);
+
+        .inverse & {
+          background-color: rgba(colors.$blue, 0.1);
+          color: rgba(colors.$blue, 0.8);
+        }
+
+        &__icon {
+          opacity: 0.25;
+        }
+      }
+    }
+  }
+
+  &__element {
+    position: absolute;
+    visibility: hidden;
+
+    &:checked {
+      & + .toggle-input {
+        &__indicator {
+          .toggle-input {
+            &__indicator {
+              &__icon {
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &__indicator {
+    background: variables.$input--background;
+    border: variables.$form--element--border-width solid variables.$input--border;
+    box-shadow: variables.$form--element--box-shadow;
+    display: inline-block;
+    height: variables.$toggle-input--height;
+    left: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all speed.$speed--x-fast;
+    width: variables.$toggle-input--width;
+
+    &__icon {
+      opacity: 0;
+      transition: all speed.$speed--x-fast;
+
+      &,
+      .icon {
+        height: 100%;
+        width: 100%;
+      }
+
+      .icon {
+        fill: colors.$grey;
+        transition: all speed.$speed--x-fast;
+      }
+    }
+
+    .inverse & {
+      background: variables.$input--inverse--background;
+      border: variables.$form--element--border-width solid variables.$input--inverse--border;
+      box-shadow: variables.$form--element--inverse--box-shadow;
+    }
+  }
+
+  &.checkbox {
+    .toggle-input {
+      &__indicator {
+        border-radius: variables.$form--element--border-radius;
+      }
+    }
+  }
+
+  &.radio {
+    .toggle-input {
+      &__indicator {
+        border-radius: 100%;
+      }
+    }
+  }
+}

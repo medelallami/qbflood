@@ -1,0 +1,91 @@
+@use '../tools/colors';
+@use '../tools/themes';
+@use '../tools/variables';
+
+$authentication--form--border: #d4dbe0;
+$authentication--form--padding: variables.$spacing-unit * 1.25;
+
+$authentication--textbox--background: #122430;
+$authentication--textbox--border: #e9edef;
+$authentication--textbox--placeholder: #c1c9cf;
+
+$authentication--header--foreground: colors.$white;
+$authentication--label--foreground: #3a5567;
+
+.application {
+  &__view {
+    &--auth-form {
+      @include themes.theme('background', 'auth-form--background');
+    }
+  }
+}
+
+.form {
+  &--authentication {
+    max-width: 350px;
+    width: 100%;
+
+    .form {
+      &__wrapper {
+        background: colors.$white;
+        border: 1px solid $authentication--form--border;
+        padding: $authentication--form--padding;
+      }
+
+      &__header {
+        background: colors.$blue;
+        margin: $authentication--form--padding * -1 $authentication--form--padding * -1 0 $authentication--form--padding *
+          -1;
+        padding: $authentication--form--padding * 0.75 $authentication--form--padding;
+
+        h1 {
+          color: $authentication--header--foreground;
+          font-size: 1.4em;
+          font-weight: 400;
+          line-height: 1;
+        }
+
+        & + .form__row {
+          margin-top: $authentication--form--padding;
+        }
+      }
+
+      &--header {
+      }
+
+      &__label {
+        color: $authentication--label--foreground;
+      }
+
+      &__row {
+        &--error {
+          color: colors.$red;
+          font-size: 0.75em;
+        }
+      }
+
+      &__actions {
+        text-align: right;
+
+        .button {
+          box-shadow: none;
+        }
+      }
+    }
+
+    .textbox {
+      background: transparent;
+      border-bottom: 1px solid $authentication--textbox--border;
+
+      &:active,
+      &:focus {
+        border-bottom: 1px solid colors.$blue;
+      }
+
+      &::placeholder {
+        color: $authentication--textbox--placeholder;
+        font-style: normal;
+      }
+    }
+  }
+}

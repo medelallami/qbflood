@@ -1,0 +1,72 @@
+@use '../tools/colors';
+
+$loading-indicator--bar--background: #e9eef2;
+$loading-indicator--bar--background--inverse: rgba(#38586d, 0.7);
+$loading-indicator--tick--background: rgba(colors.$blue, 0.75);
+$loading-indicator--tick--background--inverse: rgba(colors.$blue, 0.75);
+
+@keyframes loading-indicator-swipe {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(400%);
+  }
+
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.loading-indicator {
+  width: 32px;
+  height: 19px; // 3 * 3px bar height + 2 * 5px margin
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &.is-inverse {
+    .loading-indicator {
+      &__bar {
+        background: $loading-indicator--bar--background--inverse;
+
+        &:after {
+          background: $loading-indicator--tick--background--inverse;
+        }
+      }
+    }
+  }
+
+  &__bar {
+    background: $loading-indicator--bar--background;
+    border-radius: 10px;
+    height: 3px;
+    overflow: hidden;
+    width: 100%;
+
+    &:after {
+      animation: loading-indicator-swipe 3s ease-in-out infinite;
+      background: $loading-indicator--tick--background;
+      border-radius: 10px;
+      content: '';
+      display: block;
+      height: 100%;
+      transform: translateX(-100%);
+      width: 25%;
+    }
+
+    &--2 {
+      &:after {
+        animation-delay: 0.5s;
+      }
+    }
+
+    &--3 {
+      &:after {
+        animation-delay: 1s;
+      }
+    }
+  }
+}

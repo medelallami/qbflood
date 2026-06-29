@@ -1,0 +1,676 @@
+@use 'sass:math';
+
+@use '../tools/colors';
+@use '../tools/themes';
+@use '../tools/variables';
+
+@use './floating-action';
+
+$more-info--border: floating-action.$textbox-repeater--button--border;
+
+.torrent {
+  cursor: default;
+  position: relative;
+
+  &:after {
+    background: transparent;
+    content: '';
+    height: 100%;
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    top: 0;
+    width: 100%;
+    z-index: -1;
+  }
+
+  &:focus {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &:focus-visible {
+    outline: dashed;
+  }
+
+  &__detail {
+    @include themes.theme('color', 'torrent--secondary--foreground');
+
+    &--name {
+      @include themes.theme('color', 'torrent--primary--foreground');
+      @include themes.theme('font-weight', 'torrent--primary--font-weight');
+    }
+
+    &--tags {
+      .torrent {
+        &__tag {
+          display: inline-block;
+          margin-right: math.div(variables.$spacing-unit * 3, 10);
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
+      }
+
+      .tag {
+        @include themes.theme('background', 'torrent--tags--background');
+        @include themes.theme('color', 'torrent--tags--foreground');
+      }
+    }
+
+    &__icon {
+      &--checkmark {
+        &.icon {
+          opacity: 1;
+        }
+      }
+    }
+
+    .icon {
+      fill: currentColor;
+      height: 12px;
+      margin-right: 5px;
+      width: 12px;
+    }
+  }
+
+  &__details {
+    &__section {
+      &--secondary {
+        @include themes.theme('color', 'torrent--secondary--foreground');
+      }
+
+      &--tertiary {
+        @include themes.theme('color', 'torrent--tertiary--foreground');
+      }
+    }
+  }
+
+  &--is-stopped {
+    .torrent {
+      &__details {
+        &__section {
+          &--secondary {
+            @include themes.theme('color', 'torrent--secondary--foreground--stopped');
+          }
+
+          &--tertiary {
+            @include themes.theme('color', 'torrent--tertiary--foreground--stopped');
+          }
+        }
+      }
+
+      &__detail {
+        @include themes.theme('color', 'torrent--secondary--foreground--stopped');
+
+        &--name {
+          @include themes.theme('color', 'torrent--primary--foreground--stopped');
+          font-weight: 400;
+        }
+
+        &--tags {
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+
+  &--has-error {
+    &.torrent {
+      &--is-stopped {
+        .torrent {
+          &__detail {
+            &--name {
+              @include themes.theme('color', 'torrent--primary--foreground--error--stopped');
+            }
+          }
+        }
+      }
+    }
+
+    .torrent {
+      &__detail {
+        &--name {
+          @include themes.theme('color', 'torrent--primary--foreground--error');
+        }
+      }
+    }
+
+    &:after {
+      @include themes.theme('background', 'torrent--background--error');
+    }
+  }
+
+  &--has-warning {
+    &.torrent {
+      &--is-stopped {
+        .torrent {
+          &__detail {
+            &--name {
+              @include themes.theme('color', 'torrent--primary--foreground--warning--stopped');
+            }
+          }
+        }
+      }
+    }
+
+    .torrent {
+      &__detail {
+        &--name {
+          @include themes.theme('color', 'torrent--primary--foreground--warning');
+        }
+      }
+    }
+
+    &:after {
+      @include themes.theme('background', 'torrent--background--warning');
+    }
+  }
+  &--is-downloading {
+    &--actively {
+      .torrent {
+        &__detail {
+          &--downRate {
+            color: colors.$green;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .torrent-details {
+        &__sub-heading {
+          &__tertiary {
+            &--download {
+              color: colors.$green;
+
+              .icon {
+                fill: colors.$green;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &--is-uploading {
+    &--actively {
+      .torrent {
+        &__detail {
+          &--upRate {
+            color: colors.$blue;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .torrent-details {
+        &__sub-heading {
+          &__tertiary {
+            &--upload {
+              color: colors.$blue;
+
+              .icon {
+                fill: colors.$blue;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &--is-selected {
+    &.torrent {
+      &--has-error {
+        .torrent {
+          &__detail {
+            &--name {
+              @include themes.theme('color', 'torrent--primary--foreground--selected--error');
+            }
+
+            &--tags {
+              .tag {
+                @include themes.theme('background', 'torrent--tags--background--selected--has-error');
+                @include themes.theme('color', 'torrent--tags--foreground--has-error');
+              }
+            }
+
+            &--downRate,
+            &--upRate {
+              @include themes.theme('color', 'torrent--speed--foreground--selected--has-error');
+            }
+          }
+        }
+
+        &,
+        &:hover {
+          &:after {
+            @include themes.theme('background', 'torrent--background--error');
+          }
+        }
+      }
+
+      &--has-warning {
+        .torrent {
+          &__detail {
+            &--name {
+              @include themes.theme('color', 'torrent--primary--foreground--selected--warning');
+            }
+
+            &--tags {
+              .tag {
+                @include themes.theme('background', 'torrent--tags--background--selected--has-warning');
+                @include themes.theme('color', 'torrent--tags--foreground--has-warning');
+              }
+            }
+
+            &--downRate,
+            &--upRate {
+              @include themes.theme('color', 'torrent--speed--foreground--selected--has-warning');
+            }
+          }
+        }
+
+        &,
+        &:hover {
+          &:after {
+            @include themes.theme('background', 'torrent--background--warning');
+          }
+        }
+      }
+
+      &--is-stopped {
+        &.torrent {
+          &--has-error {
+            .torrent {
+              &__detail {
+                &--name {
+                  @include themes.theme('color', 'torrent--primary--foreground--error--stopped--selected');
+                }
+              }
+            }
+          }
+
+          &--has-warning {
+            .torrent {
+              &__detail {
+                &--name {
+                  @include themes.theme('color', 'torrent--primary--foreground--warning--stopped--selected');
+                }
+              }
+            }
+          }
+        }
+
+        .torrent {
+          &__detail {
+            @include themes.theme('color', 'torrent--secondary--foreground--selected--stopped');
+
+            &--name {
+              @include themes.theme('color', 'torrent--primary--foreground--selected--stopped');
+            }
+
+            &--downRate,
+            &--upRate {
+              @include themes.theme('color', 'torrent--tertiary--foreground--selected--stopped');
+            }
+
+            &--tags {
+              opacity: 0.6;
+            }
+          }
+
+          &__details {
+            &__section {
+              &--secondary {
+                @include themes.theme('color', 'torrent--secondary--foreground--selected--stopped');
+              }
+
+              &--tertiary {
+                @include themes.theme('color', 'torrent--tertiary--foreground--selected--stopped');
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &,
+    &:hover {
+      &:after {
+        @include themes.theme('background', 'torrent--background--selected');
+        opacity: 1;
+      }
+    }
+
+    .torrent {
+      &__detail {
+        @include themes.theme('color', 'torrent--secondary--foreground--selected');
+
+        &--name {
+          @include themes.theme('color', 'torrent--primary--foreground--selected');
+        }
+
+        &--downRate,
+        &--upRate {
+          @include themes.theme('color', 'torrent--speed--foreground--selected');
+        }
+
+        &--tags {
+          .tag {
+            @include themes.theme('background', 'torrent--tags--background--selected');
+            @include themes.theme('color', 'torrent--tags--foreground--selected');
+          }
+        }
+      }
+
+      &__details {
+        &__section {
+          &--secondary {
+            @include themes.theme('color', 'torrent--secondary--foreground--selected');
+          }
+
+          &--tertiary {
+            @include themes.theme('color', 'torrent--tertiary--foreground--selected');
+          }
+        }
+      }
+    }
+  }
+
+  &--is-expanded {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 20px;
+    height: 70px;
+
+    &.torrent {
+      &--is-downloading {
+        &--actively {
+          .torrent {
+            &__detail {
+              &--eta {
+                margin-right: 10px;
+                opacity: 1;
+                width: auto;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .torrent {
+      &__details {
+        &__section {
+          display: flex;
+
+          &--tertiary,
+          &--quaternary {
+            margin-left: -2px;
+          }
+
+          &--primary {
+            flex: 1 1 auto;
+          }
+
+          &--tertiary {
+            font-size: 0.7em;
+          }
+
+          &--secondary {
+            flex: 0 0 auto;
+            font-size: 0.75em;
+            font-weight: 500;
+
+            .icon {
+              height: 12px;
+              width: 12px;
+            }
+
+            .torrent {
+              &__detail {
+                width: auto;
+              }
+            }
+          }
+        }
+      }
+
+      &__detail {
+        flex: 0 0 auto;
+        margin-right: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100px;
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        &--name {
+          flex: 1 1 auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        &--eta {
+          margin-right: 0;
+          opacity: 0;
+          transition: opacity 1s;
+          width: 0;
+        }
+
+        &--percentComplete {
+          width: 90px;
+        }
+
+        &--upTotal {
+          width: 55px;
+        }
+
+        &--sizeBytes,
+        &--freeDiskSpace {
+          width: 55px;
+        }
+
+        &--added,
+        &--creationDate {
+          width: 80px;
+        }
+
+        &--isPrivate {
+          text-overflow: clip;
+          width: 25px;
+        }
+
+        &--peers {
+          width: 70px;
+        }
+
+        &--ratio {
+          width: 50px;
+        }
+
+        &--seeds {
+          width: 70px;
+        }
+
+        &--directory {
+          width: auto;
+          max-width: 300px;
+        }
+
+        &--tags {
+          &:last-child {
+            margin-left: auto;
+            width: auto;
+          }
+
+          .torrent {
+            &__tags {
+              margin-right: 0;
+            }
+
+            &__tag {
+              &:last-child {
+                margin-right: 0;
+              }
+            }
+          }
+        }
+
+        .icon {
+          display: inline-block;
+          height: 10px;
+          margin-bottom: -1px;
+          margin-right: 3px;
+          opacity: 0.3;
+          width: 10px;
+          vertical-align: baseline;
+        }
+      }
+    }
+  }
+
+  &--is-condensed {
+    align-items: center;
+    @include themes.theme('border-top', 'torrent--border');
+    display: flex;
+    height: 30px;
+    min-width: max-content;
+    max-width: 100%;
+    padding: 0;
+
+    &:nth-child(0n + 1) {
+      border-top: none;
+    }
+
+    &.torrent {
+      &--is-stopped {
+        .torrent {
+          &__detail {
+            @include themes.theme('color', 'torrent--secondary--foreground--stopped');
+          }
+        }
+      }
+
+      &--is-selected {
+        &,
+        & + .torrent {
+          @include themes.theme('border-color', 'torrent--border--selected');
+        }
+
+        &.torrent {
+          &--has-error {
+            &,
+            & + .torrent {
+              @include themes.theme('border-color', 'torrent--border--selected--error');
+            }
+          }
+
+          &--has-warning {
+            &,
+            & + .torrent {
+              @include themes.theme('border-color', 'torrent--border--selected--warning');
+            }
+          }
+
+          &--is-stopped {
+            .torrent {
+              &__detail {
+                @include themes.theme('color', 'torrent--tertiary--foreground--selected--stopped');
+              }
+            }
+          }
+        }
+
+        .torrent {
+          &__detail {
+            @include themes.theme('color', 'torrent--secondary--foreground--selected');
+          }
+        }
+      }
+    }
+
+    .torrent {
+      &__detail {
+        flex: 0 0 auto;
+        font-size: 0.8em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100px;
+
+        &--name {
+          font-size: 0.9em;
+        }
+
+        &--percentComplete {
+          .icon {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    .progress-bar {
+      &__icon {
+        .icon {
+          margin-right: 0;
+        }
+      }
+    }
+
+    .progress-bar--with-percent {
+      .progress-bar__fill__wrapper {
+        border-radius: 7px;
+        height: 14px;
+      }
+
+      .progress-bar__fill {
+        border-radius: 7px;
+        height: 100%;
+      }
+    }
+  }
+
+  &__more-info {
+    @include themes.theme('background', 'more-info--background');
+    border-radius: 32px 0 0 32px;
+    @include themes.theme('box-shadow', 'more-info--box-shadow');
+    height: 32px;
+    margin-top: -16px;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    right: -5px;
+    top: 50%;
+    transform: translateX(15px);
+    transition: background 0.15s, box-shadow 0.15s, opacity 0.15s, transform 0.15s;
+    width: 32px;
+    z-index: 1;
+
+    .icon {
+      fill: rgba(colors.$foreground, 0.5);
+      position: absolute;
+      height: 16px;
+      left: 16px;
+      width: 16px;
+    }
+
+    &:hover {
+      @include themes.theme('background', 'more-info--background--hover');
+      @include themes.theme('box-shadow', 'more-info--box-shadow--hover');
+
+      .icon {
+        fill: colors.$blue;
+      }
+    }
+  }
+}

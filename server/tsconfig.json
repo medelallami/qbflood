@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "module": "commonjs",
+    "sourceMap": false,
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "useUnknownInCatchVariables": false,
+    "baseUrl": "../",
+    "paths": {
+      "@server/*": ["server/*"],
+      "@shared/*": ["shared/*"]
+    },
+    "outDir": "../dist"
+  },
+  "include": ["./**/*.ts", "../shared/**/*.ts", "../config.js", "../config.ts"]
+}

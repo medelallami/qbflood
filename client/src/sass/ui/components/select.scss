@@ -1,0 +1,94 @@
+@use '../../tools/colors';
+
+@use '../config/spacing.scss';
+@use '../config/speed.scss';
+
+.select {
+  position: relative;
+
+  &__button {
+    position: relative;
+    text-align: left;
+
+    &:focus-visible,
+    &:hover {
+      .select {
+        &__indicator {
+          .icon {
+            fill: colors.$grey--hard;
+          }
+        }
+      }
+    }
+
+    &:focus,
+    &:active {
+      .select {
+        &__indicator {
+          .icon {
+            fill: colors.$blue;
+            transition: all speed.$speed--xx-fast;
+          }
+        }
+      }
+    }
+
+    .icon {
+      display: none;
+    }
+
+    .select {
+      &__item {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  &__item {
+    cursor: pointer;
+    padding: spacing.$spacing--x-small spacing.$spacing--small;
+    position: relative;
+    transition: all speed.$speed--xx-fast;
+    z-index: 1;
+
+    .context-menu__items & {
+      &:focus-visible,
+      &:hover {
+        background: colors.$light-grey--lighter;
+      }
+    }
+
+    .icon {
+      fill: colors.$grey;
+      height: 14px;
+      right: spacing.$spacing--small;
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-60%);
+      transition: all speed.$speed--xx-fast;
+      width: 14px;
+    }
+
+    &--is-selected {
+      color: colors.$blue;
+      font-weight: 500;
+
+      .icon {
+        fill: colors.$blue;
+        opacity: 1;
+      }
+    }
+  }
+
+  &--is-open {
+    .select {
+      &__indicator {
+        .icon {
+          transform: translate(-50%, -50%) rotate(180deg);
+        }
+      }
+    }
+  }
+}

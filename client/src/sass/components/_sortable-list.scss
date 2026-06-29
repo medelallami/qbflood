@@ -1,0 +1,169 @@
+@use 'sass:color';
+@use 'sass:math';
+
+@use '../tools/colors';
+@use '../tools/variables';
+
+@use '../ui/config/variables.scss' as config-variables;
+
+$sortable-list--item--background: config-variables.$input--inverse--background;
+$sortable-list--item--background--hover: color.adjust(
+  color.adjust($sortable-list--item--background, $lightness: -2%),
+  $saturation: 3%
+);
+$sortable-list--item--background--dragging: color.adjust(
+  color.adjust($sortable-list--item--background, $lightness: 2%),
+  $saturation: -1%
+);
+$sortable-list--item--background--preview: color.adjust(
+  color.adjust($sortable-list--item--background, $lightness: -3%),
+  $saturation: 3%
+);
+$sortable-list--item--border: color.adjust(
+  color.adjust($sortable-list--item--background, $lightness: -4%),
+  $saturation: 5%
+);
+$sortable-list--item--border--preview: color.adjust($sortable-list--item--border, $lightness: -3%);
+
+.sortable-list {
+  box-shadow: config-variables.$form--element--inverse--box-shadow;
+  flex: 1 1 auto;
+  font-size: 0.9em;
+  position: relative;
+
+  &__item {
+    align-items: center;
+    background: $sortable-list--item--background;
+    border: 1px solid $sortable-list--item--border;
+    cursor: move;
+    display: flex;
+    height: 30px;
+    padding: 0 math.div(variables.$spacing-unit * 1, 5);
+
+    &--stacked {
+      align-items: stretch;
+      height: auto;
+      padding-bottom: math.div(variables.$spacing-unit * 1, 5);
+      padding-top: math.div(variables.$spacing-unit * 1, 5);
+    }
+
+    &:first-child {
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 3px;
+      border-bottom-right-radius: 3px;
+    }
+
+    &--is-dragging {
+      background: $sortable-list--item--background--dragging;
+      opacity: 0.6;
+      position: relative;
+      z-index: 1;
+
+      label {
+        opacity: 0.25;
+      }
+    }
+
+    &--is-locked {
+      cursor: default;
+      opacity: 0.4;
+    }
+
+    &--is-preview {
+      background: $sortable-list--item--background--preview;
+      border: 1px solid $sortable-list--item--border--preview;
+      border-radius: 0;
+      color: colors.$white;
+      font-weight: 500;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    & + .sortable-list {
+      &__item {
+        margin-top: -1px;
+      }
+    }
+
+    .toggle-input {
+      &__indicator {
+        background: color.adjust(config-variables.$input--inverse--background, $lightness: -5%);
+        border-color: color.adjust(config-variables.$input--inverse--background, $lightness: -8%);
+      }
+    }
+
+    .icon {
+      fill: currentColor;
+
+      &--error,
+      &--lock {
+        height: 12px;
+        width: 12px;
+      }
+
+      &--error {
+        fill: colors.$red;
+      }
+    }
+  }
+
+  &__content {
+    flex: 0 0 auto;
+    margin-left: math.div(variables.$spacing-unit * 1, 5);
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &__wrapper {
+      align-items: center;
+      display: flex;
+      flex: 1 1 auto;
+
+      &--stacked {
+        align-items: stretch;
+        flex-direction: column;
+      }
+    }
+
+    &__row {
+      align-items: center;
+      display: flex;
+      width: 100%;
+    }
+
+    &__child {
+      margin-left: math.div(variables.$spacing-unit * 2, 5);
+      margin-top: math.div(variables.$spacing-unit * 1, 5);
+
+      .toggle-input__label {
+        font-size: 0.9em;
+      }
+    }
+
+    &--primary {
+      flex: 1 1 auto;
+      user-select: none;
+    }
+
+    &--secondary {
+      align-items: center;
+      font-size: 0.9em;
+
+      &,
+      &.tooltip__wrapper {
+        display: flex;
+      }
+
+      &__copy {
+        opacity: 0.5;
+      }
+    }
+  }
+}

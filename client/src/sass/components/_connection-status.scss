@@ -1,0 +1,18 @@
+@use '../tools/colors';
+
+.connection-status {
+  display: flex;
+  align-items: center;
+
+  &__icon {
+    fill: colors.$green--darker;
+    height: 15px;
+    margin-right: 5px;
+    width: 15px;
+  }
+
+  &__copy {
+    color: colors.$dark-grey--light;
+    font-size: 14px;
+  }
+}

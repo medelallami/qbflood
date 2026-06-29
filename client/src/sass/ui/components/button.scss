@@ -1,0 +1,297 @@
+@use 'sass:color';
+
+@use '../../tools/colors';
+
+@use '../config/variables.scss';
+@use '../config/speed.scss';
+
+@function button--text-shadow($color) {
+  @return 0 1px 0 color.adjust($color, $lightness: -5%), 0 1px 2px rgba(color.adjust($color, $lightness: -10%), 0.8);
+}
+
+@function button--svg-shadow($color) {
+  @return drop-shadow(0 1px 0 color.adjust($color, $lightness: -5%))
+    drop-shadow(0 1px 2px rgba(color.adjust($color, $lightness: -10%), 0.8));
+}
+
+.button {
+  border: variables.$form--element--border-width solid currentColor;
+  cursor: pointer;
+  color: colors.$white;
+  font-weight: 500;
+  line-height: 1.5;
+  position: relative;
+  user-select: none;
+
+  &:active {
+    color: rgba(colors.$white, 0.8);
+  }
+
+  &--primary {
+    background: colors.$blue;
+    border-color: colors.$blue--hard;
+    box-shadow: form--element--box-shadow(colors.$blue);
+    text-shadow: button--text-shadow(colors.$blue--hard);
+
+    &:focus-visible,
+    &:hover {
+      background: colors.$blue--light;
+    }
+
+    &:active,
+    &:focus {
+      box-shadow: form--element--box-shadow--active(colors.$blue--hard);
+    }
+
+    &:active {
+      background: colors.$blue--hard;
+      border-color: color.adjust(colors.$blue--hard, $lightness: -5%);
+      box-shadow: form--element--box-shadow--active(colors.$blue--hard);
+    }
+
+    .inverse & {
+      border-color: colors.$blue;
+
+      &:focus,
+      &:hover {
+        background: colors.$blue--light;
+        border-color: colors.$blue--light;
+      }
+
+      &:active,
+      &:focus {
+        box-shadow: form--element--inverse--box-shadow--active(colors.$blue--light);
+      }
+
+      &:active {
+        background: colors.$blue;
+        border-color: colors.$blue;
+      }
+    }
+
+    svg {
+      filter: button--svg-shadow(colors.$blue--hard);
+    }
+  }
+
+  &--secondary {
+    background: colors.$green;
+    border-color: colors.$green--hard;
+    box-shadow: form--element--box-shadow(colors.$green);
+    text-shadow: button--text-shadow(colors.$green--hard);
+
+    &:focus-visible,
+    &:hover {
+      background: colors.$green--light;
+    }
+
+    &:active,
+    &:focus {
+      box-shadow: form--element--box-shadow--active(colors.$green);
+    }
+
+    &:active {
+      background: colors.$green--hard;
+      border-color: color.adjust(colors.$green--hard, $lightness: -5%);
+    }
+
+    .inverse & {
+      border-color: colors.$green;
+
+      &:focus,
+      &:hover {
+        background: colors.$green--light;
+        border-color: colors.$green--light;
+      }
+
+      &:active,
+      &:focus {
+        box-shadow: form--element--inverse--box-shadow--active(colors.$green--light);
+      }
+
+      &:active {
+        background: colors.$green;
+        border-color: colors.$green;
+      }
+    }
+
+    svg {
+      filter: button--svg-shadow(colors.$green--hard);
+    }
+  }
+
+  &--tertiary {
+    background: colors.$grey;
+    border-color: colors.$grey--harder;
+    box-shadow: form--element--box-shadow(colors.$grey);
+    text-shadow: button--text-shadow(colors.$grey--hard);
+
+    &:focus-visible,
+    &:hover {
+      background: colors.$grey--light;
+    }
+
+    &:active,
+    &:focus {
+      box-shadow: form--element--box-shadow--active(colors.$grey);
+    }
+
+    &:active {
+      background: colors.$grey--hard;
+      border-color: color.adjust(colors.$grey--hard, $lightness: -5%);
+    }
+
+    .inverse & {
+      border-color: colors.$grey;
+
+      &:focus,
+      &:hover {
+        background: colors.$grey--light;
+        border-color: colors.$grey--light;
+      }
+
+      &:active,
+      &:focus {
+        box-shadow: form--element--inverse--box-shadow--active(colors.$grey--light);
+      }
+
+      &:active {
+        background: colors.$grey;
+        border-color: colors.$grey;
+      }
+    }
+
+    svg {
+      filter: button--svg-shadow(colors.$grey--hard);
+    }
+  }
+
+  &--quaternary {
+    background: colors.$white;
+    border-color: colors.$grey--lighter;
+    box-shadow: form--element--box-shadow(colors.$grey--lighter);
+    color: colors.$grey;
+
+    &:focus-visible,
+    &:hover {
+      border-color: colors.$medium-grey;
+      color: colors.$grey--hard;
+    }
+
+    &:active,
+    &:focus {
+      border-color: colors.$blue;
+      box-shadow: form--element--box-shadow--active(colors.$blue);
+      color: color.adjust(colors.$blue--darker, $saturation: -25%);
+    }
+
+    &:active {
+      background-color: colors.$blue--soft;
+    }
+
+    .inverse & {
+      background: variables.$input--inverse--background;
+      border-color: variables.$input--inverse--border;
+      box-shadow: variables.$form--element--inverse--box-shadow;
+      color: variables.$input--inverse--foreground;
+
+      &:focus,
+      &:hover {
+        border-color: variables.$input--inverse--border--hover;
+        color: variables.$input--inverse--foreground--hover;
+      }
+
+      &:active,
+      &:focus {
+        border-color: colors.$blue;
+        box-shadow: form--element--box-shadow--active(colors.$blue);
+        color: variables.$input--inverse--foreground--active;
+      }
+
+      &:active {
+        background-color: rgba(colors.$blue--soft, 0.15);
+      }
+    }
+
+    svg {
+      filter: button--svg-shadow(colors.$grey--lighter);
+    }
+  }
+
+  // TODO: Investiate this darker border.
+  // &--primary,
+  // &--secondary,
+  // &--tertiary {
+
+  //   .inverse & {
+  //     // border: 1px solid transparent;
+  //     // box-shadow:
+  //     //   0 0 0 1px rgba($input--inverse--border, 0.5),
+  //     //   0 0 0 2px rgba($input--inverse--border, 0.2);
+
+  //     &:active,
+  //     &:focus {
+  //       box-shadow:
+  //         0 0 0 1px rgba($input--inverse--border, 0.2),
+  //         0 0 0 2px rgba($input--inverse--border, 0.7);
+  //     }
+  //   }
+  // }
+
+  &--is-disabled {
+    box-shadow: form--element--box-shadow(colors.$blue);
+    color: colors.$grey--light;
+    text-shadow: none;
+
+    &,
+    &:hover,
+    &:focus,
+    &:active {
+      background: colors.$light-grey;
+      border-color: colors.$light-grey--hard;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  }
+
+  &__content {
+    align-items: center;
+    display: flex;
+    opacity: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity speed.$speed--x-fast;
+    white-space: nowrap;
+  }
+
+  .icon {
+    fill: currentColor;
+
+    &--clipboard {
+      width: 15px;
+    }
+
+    &--loading {
+      left: 50%;
+      opacity: 0;
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transition: opacity speed.$speed--fast;
+    }
+  }
+
+  &--is-loading {
+    .button {
+      &__content {
+        opacity: 0;
+      }
+    }
+
+    .icon {
+      &--loading {
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -1,0 +1,118 @@
+@use 'sass:math';
+
+@use '../tools/themes';
+@use '../tools/variables';
+
+@use './action-bar';
+
+.torrents {
+  @include themes.theme('background', 'torrent-list--background');
+  @include themes.theme('box-shadow', 'torrent-list--border');
+  display: flex;
+  flex: 1 1 0px;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  .loading-indicator {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &__alert {
+    @include themes.theme('color', 'torrents-list--alert--foreground');
+    text-align: center;
+
+    &__wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: math.div(variables.$spacing-unit * 1, 3);
+      // bottom: 0;
+      // left: $torrent-list--offset;
+      // position: absolute;
+      // right: 0;
+      // top: 0;
+    }
+
+    &__action {
+      margin-top: math.div(variables.$spacing-unit * 1, 5);
+    }
+  }
+}
+
+.torrent {
+  &__list {
+    &__scrollbars {
+      &--horizontal {
+        left: 0;
+        position: absolute !important;
+        top: 0;
+      }
+
+      &--vertical {
+        flex: 1 1 auto;
+        height: auto !important;
+      }
+    }
+
+    &__viewport {
+      overflow-y: overlay !important;
+    }
+
+    &__wrapper {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      justify-content: center;
+      list-style: none;
+      opacity: 1;
+      overflow: hidden;
+      position: relative;
+      transition: opacity 1s;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      z-index: 2;
+    }
+
+    &--loading {
+      &-enter {
+        opacity: 0;
+        transition: opacity 1s;
+
+        &-active {
+          opacity: 1;
+        }
+      }
+
+      &-exit {
+        opacity: 1;
+        transition: opacity 1s;
+
+        &-active {
+          opacity: 0;
+        }
+      }
+    }
+
+    &--empty {
+      opacity: 0;
+    }
+  }
+}
+
+.view {
+  &--torrent-list {
+    @include themes.theme('background', 'torrent-view--background');
+    box-shadow: -1px 0 action-bar.$torrent-list--border;
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 100%;
+  }
+}

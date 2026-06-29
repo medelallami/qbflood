@@ -32,6 +32,7 @@ node_modules/
 # Output of 'npm pack'
 *.tgz
 !artifacts/*.tgz
+!flood.tgz
 
 # Yarn Integrity file
 .yarn-integrity

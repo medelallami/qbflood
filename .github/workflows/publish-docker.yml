@@ -31,7 +31,10 @@ jobs:
       - name: Build package tarball
         run: |
           pnpm run build
-          npm pack --pack-destination .
+          npm pack
+          # Rename to flood.tgz for predictable COPY in Dockerfile.release
+          mv flood-*.tgz flood.tgz
+          ls -la flood.tgz
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

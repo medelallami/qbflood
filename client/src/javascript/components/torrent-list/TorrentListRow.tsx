@@ -70,10 +70,11 @@ const onKeyPress = (hash: string, e: KeyboardEvent) => {
 
 interface TorrentListRowProps {
   hash: string;
+  index?: number;
   style: CSSProperties;
 }
 
-const TorrentListRow: FC<TorrentListRowProps> = observer(({hash, style}: TorrentListRowProps) => {
+const TorrentListRow: FC<TorrentListRowProps> = observer(({hash, index, style}: TorrentListRowProps) => {
   const [rowLocation, setRowLocation] = useState<number>(0);
   const shouldDisplayTorrentDetails = useRef<boolean>(false);
   const rowRef = useRef<HTMLDivElement>(null);
@@ -129,6 +130,7 @@ const TorrentListRow: FC<TorrentListRowProps> = observer(({hash, style}: Torrent
         ref={rowRef}
         style={style}
         hash={hash}
+        index={index}
         handleClick={selectTorrent}
         handleDoubleClick={displayTorrentDetails}
         handleRightClick={displayContextMenu}
@@ -150,6 +152,7 @@ const TorrentListRow: FC<TorrentListRowProps> = observer(({hash, style}: Torrent
       ref={rowRef}
       style={style}
       hash={hash}
+      index={index}
       handleClick={selectTorrent}
       handleDoubleClick={displayTorrentDetails}
       handleRightClick={displayContextMenu}

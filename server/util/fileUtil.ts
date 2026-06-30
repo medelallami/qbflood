@@ -5,8 +5,8 @@ import path from 'node:path';
 
 import config from '../../config';
 
-export const accessDeniedError = () => {
-  const error = new Error('Permission denied') as NodeJS.ErrnoException;
+export const accessDeniedError = (message: string = 'Permission denied') => {
+  const error = new Error(message) as NodeJS.ErrnoException;
   error.code = 'EACCES';
   return error;
 };

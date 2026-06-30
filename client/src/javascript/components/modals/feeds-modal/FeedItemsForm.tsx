@@ -29,6 +29,13 @@ const FeedItemsForm: FC = observer(() => {
       onChange={({event, formData}) => {
         const feedBrowseForm = formData as {feedID: string; search: string};
         if ((event.target as HTMLInputElement).type !== 'checkbox') {
+          if (feedBrowseForm.feedID === 'placeholder') {
+            // No real feed selected; keep the placeholder silently in
+            // place and do not call the items endpoint (which would
+            // 500 because 'placeholder' is not a real feed id).
+            setSelectedFeedID(null);
+            return;
+          }
           setSelectedFeedID(feedBrowseForm.feedID);
           FeedActions.fetchItems({
             id: feedBrowseForm.feedID,

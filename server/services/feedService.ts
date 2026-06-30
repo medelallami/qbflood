@@ -223,10 +223,17 @@ class FeedService extends BaseService<Record<string, never>> {
   }
 
   async getItems(id: string, search: string): Promise<Array<Item>> {
+    if (id === 'placeholder') {
+      // The client uses 'placeholder' as a synthetic id for the
+      // 'no feed selected' entry in the dropdown. Return an empty
+      // list so the modal renders without spamming 500 errors.
+      return [];
+    }
+
     const selectedFeedReader = this.feedReaders.find((feedReader) => feedReader.getOptions().feedID === id);
 
     if (selectedFeedReader == null) {
-      throw new Error();
+      return [];
     }
 
     const items = selectedFeedReader.getItems();

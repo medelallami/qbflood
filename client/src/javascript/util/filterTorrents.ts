@@ -27,7 +27,9 @@ function filterTorrents(
 ): TorrentProperties[] {
   if (opts.filter.length) {
     if (opts.type === 'location') {
-      return torrentList.filter((torrent) => opts.filter.some((directory) => torrent.directory.startsWith(directory)));
+      return torrentList.filter((torrent) =>
+        opts.filter.some((directory) => isWithinDirectory(torrent.directory, directory)),
+      );
     }
 
     if (opts.type === 'status') {
@@ -64,6 +66,24 @@ function filterTorrents(
   }
 
   return torrentList;
+}
+
+function isWithinDirectory(filePath: string, directoryRoot: string): boolean {
+  const root = stripTrailingSeparators(directoryRoot);
+  const target = stripTrailingSeparators(filePath);
+
+  if (target === root) {
+    return true;
+  }
+
+  return target.startsWith(`${root}/`);
+}
+
+function stripTrailingSeparators(input: string): string {
+  // Normalise both Windows ('\\') and POSIX ('/') separators so the
+  // comparison stays consistent across platforms the torrent client
+  // happens to run on.
+  return input.replace(/[\\/]+$/u, '');
 }
 
 export default filterTorrents;

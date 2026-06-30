@@ -15,6 +15,7 @@ interface TorrentListRowExpandedProps {
   className: string;
   style: CSSProperties;
   hash: string;
+  index?: number;
   handleClick: (hash: string, event: KeyboardEvent | MouseEvent) => void;
   handleDoubleClick: (hash: string) => void;
   handleRightClick: (hash: string, event: KeyboardEvent | MouseEvent) => void;
@@ -49,6 +50,7 @@ const TorrentListRowExpanded = observer(
         className,
         style,
         hash,
+        index,
         handleClick,
         handleDoubleClick,
         handleRightClick,
@@ -131,6 +133,11 @@ const TorrentListRowExpanded = observer(
           {...dataAttributes}
         >
           <div className={css({alignItems: 'center', display: 'flex'})}>
+            {index != null ? (
+              <div className="table__cell torrent__list__index torrent__list__index--expanded" aria-label="row index">
+                {index + 1}
+              </div>
+            ) : null}
             {primarySection}
             <div className="torrent__details__section torrent__details__section--secondary">{secondarySection}</div>
           </div>

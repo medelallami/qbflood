@@ -40,6 +40,26 @@ const emitRequestSentAlert = (count: number) => {
   });
 };
 
+const extractErrorMessage = (err: unknown): string | undefined => {
+  if (err == null) {
+    return undefined;
+  }
+  const data = (err as {response?: {data?: unknown}})?.response?.data;
+  if (data != null && typeof data === 'object') {
+    const obj = data as {message?: unknown; errors?: unknown};
+    if (typeof obj.message === 'string' && obj.message.length > 0) {
+      return obj.message;
+    }
+    if (Array.isArray(obj.errors) && typeof obj.errors[0] === 'string') {
+      return obj.errors[0];
+    }
+  }
+  if (typeof (err as {message?: unknown})?.message === 'string') {
+    return (err as {message: string}).message;
+  }
+  return undefined;
+};
+
 const emitTorrentAddedAlert = (count: number) => {
   AlertStore.add({
     id: 'alert.torrent.add',
@@ -48,11 +68,13 @@ const emitTorrentAddedAlert = (count: number) => {
   });
 };
 
-const emitFailedToAddTorrentAlert = (count: number) => {
+const emitFailedToAddTorrentAlert = (count: number, detail?: string) => {
   AlertStore.add({
     id: 'alert.torrent.add.failed',
     type: 'error',
     count,
+    detail,
+    duration: 8 * 1000,
   });
 };
 
@@ -66,8 +88,8 @@ const TorrentActions = {
           emitRequestSentAlert(options.urls.length);
         }
       },
-      () => {
-        emitFailedToAddTorrentAlert(options.urls.length);
+      (err) => {
+        emitFailedToAddTorrentAlert(options.urls.length, extractErrorMessage(err));
       },
     ),
 
@@ -80,8 +102,8 @@ const TorrentActions = {
           emitRequestSentAlert(options.files.length);
         }
       },
-      () => {
-        emitFailedToAddTorrentAlert(options.files.length);
+      (err) => {
+        emitFailedToAddTorrentAlert(options.files.length, extractErrorMessage(err));
       },
     ),
 

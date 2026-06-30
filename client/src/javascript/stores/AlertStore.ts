@@ -8,6 +8,7 @@ export interface Alert {
   duration: number;
   timer: number;
   updated: number;
+  detail?: string;
 }
 
 class AlertStore {
@@ -26,11 +27,13 @@ class AlertStore {
     type = 'success',
     count = 0,
     duration = 5 * 1000,
+    detail,
   }: {
     id: string;
     type?: Alert['type'];
     count?: number;
     duration?: number;
+    detail?: string;
   }) {
     const curAlert = this.alerts[id];
 
@@ -40,6 +43,9 @@ class AlertStore {
       curAlert.count += count;
       curAlert.timer = this.scheduleClose(id, duration);
       curAlert.updated = Date.now();
+      if (detail != null) {
+        curAlert.detail = detail;
+      }
     } else {
       const newAlert: Alert = {
         id,
@@ -48,6 +54,7 @@ class AlertStore {
         duration,
         timer: this.scheduleClose(id, duration),
         updated: Date.now(),
+        detail,
       };
       extendObservable(this.alerts, {[id]: newAlert});
     }

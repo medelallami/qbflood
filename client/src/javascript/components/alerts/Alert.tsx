@@ -12,7 +12,8 @@ interface AlertProps {
 
 const Alert: FC<AlertProps> = observer((props: AlertProps) => {
   const {id} = props;
-  const {count, type} = AlertStore.alerts[id] || {};
+  const alert = AlertStore.alerts[id];
+  const {count, type, detail} = alert || {};
 
   if (id == null || count == null || type == null) {
     return null;
@@ -39,6 +40,11 @@ const Alert: FC<AlertProps> = observer((props: AlertProps) => {
             countElement: <span className="alert__count">{count}</span>,
           }}
         />
+        {detail != null && detail.length > 0 ? (
+          <span className="alert__detail" data-testid={`alert-detail-${id}`}>
+            {detail}
+          </span>
+        ) : null}
       </span>
     </li>
   );

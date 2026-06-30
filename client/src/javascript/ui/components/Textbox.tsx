@@ -8,11 +8,21 @@ import type {FormRowItemProps} from './FormRowItem';
 
 type TextboxProps = Pick<
   React.InputHTMLAttributes<HTMLInputElement>,
-  'children' | 'disabled' | 'defaultValue' | 'placeholder' | 'readOnly' | 'onChange' | 'onClick' | 'autoComplete'
+  | 'children'
+  | 'disabled'
+  | 'defaultValue'
+  | 'placeholder'
+  | 'readOnly'
+  | 'onChange'
+  | 'onClick'
+  | 'autoComplete'
+  | 'autoCapitalize'
+  | 'spellCheck'
+  | 'inputMode'
 > & {
   id: string;
   label?: React.ReactNode;
-  type?: 'text' | 'password';
+  type?: 'text' | 'password' | 'email' | 'url';
   width?: FormRowItemProps['width'];
   addonPlacement?: 'before' | 'after';
   labelOffset?: boolean;
@@ -32,6 +42,9 @@ const Textbox = forwardRef<HTMLInputElement, TextboxProps>(
       defaultValue,
       placeholder,
       autoComplete,
+      autoCapitalize,
+      spellCheck,
+      inputMode,
       type = 'text',
       disabled,
       readOnly,
@@ -81,6 +94,9 @@ const Textbox = forwardRef<HTMLInputElement, TextboxProps>(
             tabIndex={0}
             type={type}
             autoComplete={autoComplete}
+            autoCapitalize={autoCapitalize}
+            spellCheck={spellCheck}
+            inputMode={inputMode}
             disabled={disabled}
             readOnly={readOnly}
           />

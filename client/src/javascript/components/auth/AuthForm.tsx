@@ -130,7 +130,15 @@ const AuthForm: FC<AuthFormProps> = ({mode}: AuthFormProps) => {
               </FormRow>
             ) : null}
             <FormRow>
-              <Textbox placeholder={i18n._('auth.username')} id="username" autoComplete="username" />
+              <Textbox
+                placeholder={i18n._('auth.username')}
+                id="username"
+                type="email"
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                inputMode="email"
+              />
             </FormRow>
             <FormRow>
               <Textbox

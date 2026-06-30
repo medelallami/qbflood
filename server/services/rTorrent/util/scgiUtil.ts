@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import net from 'node:net';
 
 import {RPCError} from '../types/RPCError';
@@ -8,14 +9,43 @@ import serializer from './XMLRPCSerializer';
 
 const NULL_CHAR = String.fromCharCode(0);
 
-const bufferStream = (stream: net.Socket): Promise<string> => {
-  const chunks: Buffer[] = [];
-  return new Promise<string>((resolve, reject) => {
+const formatConnectionError = (options: net.NetConnectOpts, cause: NodeJS.ErrnoException): Error => {
+  const target =
+    typeof options.path === 'string'
+      ? options.path
+      : `${options.host ?? 'localhost'}:${options.port ?? ''}`;
+
+  if (cause.code === 'ENOENT' && typeof options.path === 'string') {
+    return new Error(
+      `rTorrent SCGI socket not found at "${target}". Mount the volume into the Flood container that contains it (e.g. -v <rtdir>:<rtdir>) and verify the value set in --rtconfig.`,
+    );
+  }
+
+  if (cause.code === 'ECONNREFUSED' && typeof options.path === 'string') {
+    let isFilePresent = false;
+    try {
+      isFilePresent = fs.statSync(options.path).isSocket();
+    } catch {
+      isFilePresent = false;
+    }
+
+    if (!isFilePresent) {
+      return new Error(
+        `rTorrent SCGI socket path "${target}" exists but is not accessible. Check that rTorrent is running, that the socket file permissions allow the Flood user, and that the volume is mounted into the Flood container.`,
+      );
+    }
+  }
+
+  return new Error(`Failed to connect to rTorrent at ${target}: ${cause.code ?? ''} ${cause.message}`.trim());
+};
+
+const bufferStream = (stream: net.Socket): Promise<string> =>
+  new Promise<string>((resolve, reject) => {
+    const chunks: Buffer[] = [];
     stream.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
     stream.on('error', reject);
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
-};
 
 export const methodCallXML = (options: net.NetConnectOpts, methodName: string, params: XMLRPCValue[]) =>
   // TODO: better typings
@@ -25,7 +55,7 @@ export const methodCallXML = (options: net.NetConnectOpts, methodName: string, p
     const xml = serializer.serializeSync(methodName, params);
     const xmlLength = Buffer.byteLength(xml, 'utf8');
 
-    stream.on('error', reject);
+    stream.on('error', (err) => reject(formatConnectionError(options, err as NodeJS.ErrnoException)));
     stream.setEncoding('utf8');
 
     const headerItems = [
@@ -66,7 +96,7 @@ export const methodCallJSON = (options: net.NetConnectOpts, methodName: string, 
     const json = JSON.stringify(request);
     const jsonLength = Buffer.byteLength(json, 'utf8');
 
-    stream.on('error', reject);
+    stream.on('error', (err) => reject(formatConnectionError(options, err as NodeJS.ErrnoException)));
     stream.setEncoding('utf8');
 
     const headerItems = [

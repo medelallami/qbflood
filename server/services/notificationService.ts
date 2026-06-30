@@ -67,18 +67,40 @@ class NotificationService extends BaseService<NotificationServiceEvents> {
   }
 
   /**
-   * Adds notifications
+   * Adds notifications. De-duplicated by (id, data) within a short
+   * window so that repeated calls (for example an RSS feed that
+   * repeatedly matches the same torrent because the matched-url
+   * store has not been flushed yet) do not produce duplicate toasts.
    *
    * @param {Array<Notification>} notifications - Notifications to add
    * @return {Promise<void>} - Rejects with error.
    */
   async addNotification(notifications: Array<Pick<Notification, 'id' | 'data'>>, ts = Date.now()): Promise<void> {
-    this.count.total += notifications.length;
-    this.count.unread += notifications.length;
+    if (notifications.length === 0) {
+      return;
+    }
+
+    const seen = new Set<string>();
+    const unique: Array<Pick<Notification, 'id' | 'data'>> = [];
+    notifications.forEach((notification) => {
+      const key = notification.id + '\u0000' + JSON.stringify(notification.data ?? {});
+      if (seen.has(key)) {
+        return;
+      }
+      seen.add(key);
+      unique.push(notification);
+    });
+
+    if (unique.length === 0) {
+      return;
+    }
+
+    this.count.total += unique.length;
+    this.count.unread += unique.length;
 
     await this.db
       .insertAsync(
-        notifications.map((notification) => ({
+        unique.map((notification) => ({
           ts,
           data: notification.data,
           id: notification.id,

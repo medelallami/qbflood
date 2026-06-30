@@ -116,11 +116,18 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
     directory: TorrentProperties['directory'],
     sizeBytes: TorrentProperties['sizeBytes'],
   ) {
-    const separator = directory.includes('/') ? '/' : '\\';
-
+    // Combine '/' and '\\' so torrent clients that report Windows-style
+    // paths (e.g. Transmission on Windows) land in the same hierarchy as
+    // clients that report POSIX paths. The separator in the resulting
+    // fullPath is fixed to '/' so the client renders consistent
+    // breadcrumbs.
     const countSizeAndBytesForHierarchy = (parent: LocationTreeNode, pathSplit: string[]) => {
       const [nodeName, ...restOfPath] = pathSplit;
+      if (nodeName == null) {
+        return;
+      }
       let nodeRoot = parent.children.find((treeNode) => treeNode.directoryName === nodeName);
+      const separator = '/';
       if (!nodeRoot) {
         nodeRoot = {
           directoryName: nodeName,
@@ -139,13 +146,17 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
       }
     };
 
-    const pathSplit = directory.startsWith(separator)
-      ? directory.split(separator).slice(1)
-      : directory.split(separator);
+    const pathSplit = directory.split(/[\\/]+/u).filter((segment) => segment.length > 0);
 
-    countSizeAndBytesForHierarchy(this.taxonomy.locationTree, pathSplit);
+    if (pathSplit.length === 0) {
+      this.taxonomy.locationTree.containedCount += 1;
+      this.taxonomy.locationTree.containedSize += sizeBytes;
+      return;
+    }
+
     this.taxonomy.locationTree.containedCount += 1;
     this.taxonomy.locationTree.containedSize += sizeBytes;
+    countSizeAndBytesForHierarchy(this.taxonomy.locationTree, pathSplit);
   }
 
   incrementStatusCounts(statuses: Array<TorrentStatus>) {

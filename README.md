@@ -111,6 +111,7 @@ Run the installation command again.
   - Certain features (sequential download, initial seeding, etc.) are not available in vanilla rTorrent.
 - Ask for help in the [Flood Discord server](https://discord.gg/Z7yR5Uf).
 - MediaInfo integration: see [docs/MEDIAINFO.md](./docs/MEDIAINFO.md) for install steps, Docker recipes, rate limits and recognised extensions.
+- Internationalisation: see [docs/I18N.md](./docs/I18N.md) for the Crowdin flow and how to add or fix translatable strings.
 
 ### Docker
 

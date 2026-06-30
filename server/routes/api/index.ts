@@ -40,32 +40,6 @@ const apiRoutes = async (fastify: FastifyInstance) => {
 
   await fastify.register(authRoutes, {prefix: '/auth'});
 
-  const typedFastify = fastify.withTypeProvider<ZodTypeProvider>();
-  typedFastify.get(
-    '/health',
-    {
-      schema: {
-        summary: 'Health check',
-        description: 'Lightweight liveness probe. Returns service status and uptime.',
-        tags: ['Health'],
-        response: {
-          200: z
-            .object({
-              status: z.literal('ok'),
-              uptime: z.number().nonnegative(),
-              timestamp: z.string(),
-            })
-            .strict(),
-        },
-      },
-    },
-    async () => ({
-      status: 'ok' as const,
-      uptime: Math.round(process.uptime()),
-      timestamp: new Date().toISOString(),
-    }),
-  );
-
   await fastify.register(async (protectedRoutes) => {
     const typedProtectedRoutes = protectedRoutes.withTypeProvider<ZodTypeProvider>();
     protectedRoutes.addHook('preHandler', authenticateHook);

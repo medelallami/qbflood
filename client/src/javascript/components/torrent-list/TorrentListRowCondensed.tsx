@@ -9,7 +9,6 @@ interface TorrentListRowCondensedProps {
   className: string;
   style: CSSProperties;
   hash: string;
-  index?: number;
   handleClick: (hash: string, event: MouseEvent) => void;
   handleDoubleClick: (hash: string) => void;
   handleRightClick: (hash: string, event: MouseEvent) => void;
@@ -30,7 +29,6 @@ const TorrentListRowCondensed = observer(
         className,
         style,
         hash,
-        index,
         handleClick,
         handleDoubleClick,
         handleRightClick,
@@ -66,13 +64,6 @@ const TorrentListRowCondensed = observer(
         [],
       );
 
-      const indexCell =
-        index != null ? (
-          <div className="table__cell torrent__list__index" aria-label="row index">
-            {index + 1}
-          </div>
-        ) : null;
-
       return (
         <div
           className={className}
@@ -88,7 +79,6 @@ const TorrentListRowCondensed = observer(
           ref={ref}
           {...dataAttributes}
         >
-          {indexCell}
           {torrentListColumns}
         </div>
       );

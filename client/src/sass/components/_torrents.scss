@@ -101,22 +101,9 @@
       }
     }
 
-      &--empty {
-        opacity: 0;
-      }
-  }
-}
-
-.torrent__list__index {
-  flex: 0 0 40px;
-  max-width: 40px;
-  min-width: 40px;
-  padding-right: variables.$spacing-unit * 0.5;
-  text-align: right;
-  @include themes.theme('color', 'tertiary-foreground');
-
-  &--expanded {
-    padding-left: variables.$spacing-unit * 0.5;
+    &--empty {
+      opacity: 0;
+    }
   }
 }
 

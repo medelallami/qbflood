@@ -27,7 +27,7 @@ import TorrentListDropzone from './TorrentListDropzone';
 import TorrentListRow from './TorrentListRow';
 
 const TorrentListRowRenderer: FC<ListChildComponentProps> = observer(({index, style}) => (
-  <TorrentListRow hash={TorrentStore.filteredTorrents[index].hash} index={index} style={style} />
+  <TorrentListRow hash={TorrentStore.filteredTorrents[index].hash} style={style} />
 ));
 
 const TorrentList: FC = observer(() => {

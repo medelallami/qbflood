@@ -112,10 +112,8 @@ export const configSchema = strictObject({
   // Path to the SSL fullchain certificate. [default: '<rundir>/fullchain.pem']
   sslCert: string().optional(),
 
-  // CLI argument: --watchmountpoints, can be called multiple times
-  // Assign desired mounts to include. Refer to "Mounted on" column of `df -P`.
-  // Use ',' to split for multiple values. "undefined" means all possible mounts.
-  // [default: undefined]
+  // Assign desired mounts to include. Refer to "Mounted on" column of `df -P`
+  // "undefined" means all possible mounts. [default: undefined]
   watchMountPoints: array(string()).optional(),
 
   // CLI argument: --allowedpath, can be called multiple times

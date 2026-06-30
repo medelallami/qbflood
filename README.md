@@ -110,6 +110,7 @@ Run the installation command again.
   - [Compile](https://github.com/rakshasa/rtorrent/wiki/Installing): XMLRPC support flag (`--with-xmlrpc-c`) is required during compilation.
   - Certain features (sequential download, initial seeding, etc.) are not available in vanilla rTorrent.
 - Ask for help in the [Flood Discord server](https://discord.gg/Z7yR5Uf).
+- MediaInfo integration: see [docs/MEDIAINFO.md](./docs/MEDIAINFO.md) for install steps, Docker recipes, rate limits and recognised extensions.
 
 ### Docker
 

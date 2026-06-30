@@ -7,6 +7,12 @@ export const clientSettingsSchema = strictObject({
   dht: boolean(),
   dhtPort: coerceNumber,
   directoryDefault: string(),
+  // Optional supplementary paths reported by some torrent clients
+  // (qBittorrent exposes 'temp_path' for incomplete downloads and
+  // 'save_path' for the completed download directory). When omitted
+  // the client does not provide them; UI features should hide them
+  // in that case rather than guess.
+  incompleteDirectory: string().optional(),
   networkHttpMaxOpen: coerceNumber,
   networkLocalAddress: array(string()),
   networkMaxOpenFiles: coerceNumber,

@@ -2,6 +2,10 @@ export interface ClientSettings {
   dht: boolean;
   dhtPort: number;
   directoryDefault: string;
+  // qBittorrent exposes the directory used to stage incomplete
+  // downloads via the 'temp_path' app preference. Other clients do
+  // not surface a comparable value, so this is optional.
+  incompleteDirectory?: string;
   networkHttpMaxOpen: number;
   networkLocalAddress: Array<string>;
   networkMaxOpenFiles: number;

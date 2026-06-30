@@ -436,6 +436,7 @@ export const MOCK_CLIENT_SETTINGS = {
   dht: true,
   dhtPort: 6881,
   directoryDefault: '/downloads',
+  incompleteDirectory: '/downloads/.incomplete',
   networkHttpMaxOpen: 50,
   networkLocalAddress: ['0.0.0.0'],
   networkMaxOpenFiles: 600,

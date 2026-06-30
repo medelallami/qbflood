@@ -4,6 +4,12 @@ export interface QBittorrentAppPreferences {
   pex: boolean;
   // Default save path for torrents, separated by slashes
   save_path: string;
+  // Whether incomplete downloads should be staged in 'temp_path'
+  // instead of 'save_path'. Available in qBittorrent 4.1+.
+  temp_path_enabled?: boolean;
+  // Directory used to stage incomplete downloads when
+  // temp_path_enabled is true.
+  temp_path?: string;
   // Maximum global number of simultaneous connections
   max_connec: number;
   // Maximum number of simultaneous connections per torrent

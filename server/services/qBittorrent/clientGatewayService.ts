@@ -552,6 +552,9 @@ class QBittorrentClientGatewayService extends BaseClientGatewayService implement
           dht: preferences.dht,
           dhtPort: preferences.listen_port,
           directoryDefault: preferences.save_path.split(',')[0],
+          incompleteDirectory: preferences.temp_path_enabled
+            ? preferences.temp_path
+            : undefined,
           networkHttpMaxOpen: preferences.max_connec,
           networkLocalAddress: [preferences.announce_ip],
           networkMaxOpenFiles: 0,

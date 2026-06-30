@@ -227,10 +227,21 @@ process.on('SIGINT', () => {
   process.exit();
 });
 
+function ensureRuntimeDirectory(rundir: string): void {
+  const targets = [rundir, path.join(rundir, 'db'), path.join(rundir, 'temp')];
+  for (const target of targets) {
+    try {
+      fs.mkdirSync(target, {recursive: true, mode: 0o700});
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      console.error(`Failed to create runtime directory ${target}: ${err.code ?? ''} ${err.message}`);
+      process.exit(1);
+    }
+  }
+}
+
 try {
-  fs.mkdirSync(path.join(argv.rundir), {recursive: true, mode: 0o700});
-  fs.mkdirSync(path.join(argv.rundir, 'db'), {recursive: true});
-  fs.mkdirSync(path.join(argv.rundir, 'temp'), {recursive: true});
+  ensureRuntimeDirectory(path.join(argv.rundir));
 } catch {
   console.error(`Failed to access runtime directory ${argv.rundir}`);
   process.exit(1);

@@ -285,8 +285,13 @@ class FeedService extends BaseService<Record<string, never>> {
           itemsToDownload.map(async (item): Promise<Array<string>> => {
             const {urls, destination, start, tags, ruleID} = item;
 
-            await this.services?.clientGatewayService
-              ?.addTorrentsByURL({
+            const gateway = this.services?.clientGatewayService;
+            if (!gateway) {
+              return [];
+            }
+
+            try {
+              const addedUrls = await gateway.addTorrentsByURL({
                 urls,
                 cookies: {},
                 destination,
@@ -296,14 +301,14 @@ class FeedService extends BaseService<Record<string, never>> {
                 isCompleted: false,
                 isSequential: false,
                 isInitialSeeding: false,
-              })
-              .then(() => {
-                this.db.update({_id: feedID}, {$inc: {count: 1}}, {upsert: true});
-                this.db.update({_id: ruleID}, {$inc: {count: 1}}, {upsert: true});
-              })
-              .catch(console.error);
-
-            return urls;
+              });
+              this.db.update({_id: feedID}, {$inc: {count: 1}}, {upsert: true});
+              this.db.update({_id: ruleID}, {$inc: {count: 1}}, {upsert: true});
+              return addedUrls;
+            } catch (err) {
+              console.error(`Feed '${feedLabel}' (${feedID}): failed to add item`, err);
+              return [];
+            }
           }),
         ).then((ArrayOfURLArrays) => {
           const addedURLs = ArrayOfURLArrays.reduce(

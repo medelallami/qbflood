@@ -161,6 +161,12 @@ const {argv: argvObj} = yargs(process.argv.slice(2))
     describe: 'Allowed path for file operations, can be called multiple times',
     type: 'string',
   })
+  .option('watchmountpoints', {
+    describe:
+      'Restrict disk-usage reporting to the listed mount points (matches the "Mounted on" column of `df -P`). Can be called multiple times. Comma-separated values are also accepted. Defaults to all mount points.',
+    type: 'string',
+    array: true,
+  })
   .option('assets', {
     default: true,
     describe: 'ADVANCED: Serve static assets',
@@ -358,6 +364,13 @@ if (typeof argv.allowedpath === 'string') {
   allowedPaths = allowedPaths.concat(argv.allowedpath);
 }
 
+let watchMountPoints: string[] = [];
+if (typeof argv.watchmountpoints === 'string') {
+  watchMountPoints = watchMountPoints.concat(argv.watchmountpoints.split(','));
+} else if (Array.isArray(argv.watchmountpoints)) {
+  watchMountPoints = watchMountPoints.concat(argv.watchmountpoints);
+}
+
 const result = configSchema.safeParse({
   baseURI: argv.baseuri,
   dbCleanInterval: argv.dbclean,
@@ -375,6 +388,7 @@ const result = configSchema.safeParse({
   sslKey: argv.sslkey || path.resolve(path.join(argv.rundir, 'key.pem')),
   sslCert: argv.sslcert || path.resolve(path.join(argv.rundir, 'fullchain.pem')),
   allowedPaths: allowedPaths.length > 0 ? allowedPaths : undefined,
+  watchMountPoints: watchMountPoints.length > 0 ? watchMountPoints.map((p) => p.trim()).filter((p) => p.length > 0) : undefined,
   serveAssets: argv.assets,
   disableRateLimit: argv.disableRateLimit,
 });

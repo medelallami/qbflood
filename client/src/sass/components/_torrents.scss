@@ -120,6 +120,21 @@
   }
 }
 
+.torrent-cell__message {
+  @include themes.theme('color', 'tertiary-foreground');
+  display: inline-block;
+  font-size: 0.8em;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+
+  &--empty {
+    text-align: center;
+  }
+}
+
 .view {
   &--torrent-list {
     @include themes.theme('background', 'torrent-view--background');

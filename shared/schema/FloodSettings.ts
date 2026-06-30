@@ -79,7 +79,7 @@ const torrentListColumnsSchema = z.array(torrentListColumnItemSchema).default([
   {id: 'directory', visible: false},
   {id: 'hash', visible: false},
   {id: 'isPrivate', visible: false},
-  {id: 'message', visible: false},
+  {id: 'message', visible: true},
   {id: 'trackerURIs', visible: false},
   {id: 'tags', visible: true},
 ]);

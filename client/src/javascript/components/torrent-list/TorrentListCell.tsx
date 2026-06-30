@@ -77,6 +77,17 @@ const ETACell: FC<{eta: number}> = observer(({eta}: {eta: number}) => {
   return <Duration value={eta} />;
 });
 
+const MessageCell: FC<{message: string}> = observer(({message}: {message: string}) => {
+  if (message == null || message.length === 0) {
+    return <span className="torrent-cell__message torrent-cell__message--empty">—</span>;
+  }
+  return (
+    <span className="torrent-cell__message torrent-cell__message--warning" title={message}>
+      {message}
+    </span>
+  );
+});
+
 const PeerCell: FC<{peersConnected: number; totalPeers: number}> = observer(
   ({peersConnected, totalPeers}: {peersConnected: number; totalPeers: number}) => {
     const {i18n} = useLingui();
@@ -148,6 +159,8 @@ const DefaultTorrentListCellContent: FC<TorrentListCellContentProps> = observer(
         return <RatioCell ratio={torrent[column]} />;
       case 'isPrivate':
         return <BooleanCell value={torrent[column]} />;
+      case 'message':
+        return <MessageCell message={typeof torrent.message === 'string' ? torrent.message : ''} />;
       case 'tags':
         return <TagsCell tags={torrent[column]} />;
       case 'trackerURIs':

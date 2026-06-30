@@ -429,6 +429,7 @@ class TransmissionClientGatewayService extends BaseClientGatewayService implemen
                 seedsTotal: torrent.peersSendingToUs,
                 sizeBytes: torrent.totalSize,
                 status,
+                category: typeof torrent.category === 'string' ? torrent.category : '',
                 tags: torrent.labels || [],
                 trackerURIs,
               };

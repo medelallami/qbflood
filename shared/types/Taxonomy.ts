@@ -12,6 +12,8 @@ export interface Taxonomy {
   statusSizes: Record<string, number>;
   tagCounts: Record<string, number>;
   tagSizes: Record<string, number>;
+  categoryCounts: Record<string, number>;
+  categorySizes: Record<string, number>;
   trackerCounts: Record<string, number>;
   trackerSizes: Record<string, number>;
 }

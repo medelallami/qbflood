@@ -47,6 +47,10 @@ export interface TorrentProperties {
   seedsTotal: number;
   sizeBytes: number;
   status: Array<TorrentStatus>;
+  // qBittorrent "category" -- empty string when the torrent has no
+  // category assigned. Other clients leave this unset; we still surface
+  // it as an empty string so the filter UI has a single shape.
+  category: string;
   tags: Array<string>;
   trackerURIs: Array<string>;
   upRate: number;

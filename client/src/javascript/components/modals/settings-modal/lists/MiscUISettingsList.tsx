@@ -22,6 +22,9 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
   const [filterTagEnabled, setFilterTagEnabled] = useState<FloodSettings['UISidebarFilterTag']>(
     SettingStore.floodSettings.UISidebarFilterTag,
   );
+  const [filterCategoryEnabled, setFilterCategoryEnabled] = useState<FloodSettings['UISidebarFilterCategory']>(
+    SettingStore.floodSettings.UISidebarFilterCategory,
+  );
 
   const handlePageTitleSpeedToggle = () => {
     const nextValue = !pageTitleSpeedEnabled;
@@ -42,6 +45,11 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
     const nextValue = !filterTagEnabled;
     setFilterTagEnabled(nextValue);
     onSettingsChange({UISidebarFilterTag: nextValue});
+  };
+  const handleFilterCategoryToggle = () => {
+    const nextValue = !filterCategoryEnabled;
+    setFilterCategoryEnabled(nextValue);
+    onSettingsChange({UISidebarFilterCategory: nextValue});
   };
   return (
     <ToggleList
@@ -65,6 +73,11 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
           label: 'settings.ui.sidebar.filter.tag',
           checked: filterTagEnabled,
           onClick: handleFilterTagToggle,
+        },
+        {
+          label: 'settings.ui.sidebar.filter.category',
+          checked: filterCategoryEnabled,
+          onClick: handleFilterCategoryToggle,
         },
       ]}
     />

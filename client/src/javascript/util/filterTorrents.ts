@@ -21,9 +21,14 @@ interface TagFilter {
   filter: string[];
 }
 
+interface CategoryFilter {
+  type: 'category';
+  filter: string[];
+}
+
 function filterTorrents(
   torrentList: TorrentProperties[],
-  opts: LocationFilter | StatusFilter | TrackerFilter | TagFilter,
+  opts: LocationFilter | StatusFilter | TrackerFilter | TagFilter | CategoryFilter,
 ): TorrentProperties[] {
   if (opts.filter.length) {
     if (opts.type === 'location') {
@@ -62,6 +67,16 @@ function filterTorrents(
         (torrent) =>
           (includeUntagged && torrent.tags.length === 0) || torrent.tags.some((tag) => opts.filter.includes(tag)),
       );
+    }
+
+    if (opts.type === 'category') {
+      return torrentList.filter((torrent) => {
+        const category =
+          typeof torrent.category === 'string' && torrent.category.length > 0
+            ? torrent.category
+            : 'uncategorized';
+        return opts.filter.includes(category);
+      });
     }
   }
 

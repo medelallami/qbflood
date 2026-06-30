@@ -875,6 +875,7 @@ class RTorrentClientGatewayService extends BaseClientGatewayService implements C
                 seedsTotal: response.seedsTotal,
                 sizeBytes: effectiveSizeBytes,
                 status: getTorrentStatusFromProperties(response),
+                category: '',
                 tags: response.tags,
                 trackerURIs: response.trackerURIs,
                 upRate: response.upRate,

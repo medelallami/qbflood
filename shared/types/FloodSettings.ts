@@ -49,6 +49,7 @@ export interface FloodSettings {
   UISidebarFilterLocation: boolean;
   UISidebarFilterTracker: boolean;
   UISidebarFilterTag: boolean;
+  UISidebarFilterCategory: boolean;
 }
 
 export type FloodSetting = keyof FloodSettings;

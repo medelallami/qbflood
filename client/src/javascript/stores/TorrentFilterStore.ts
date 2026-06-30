@@ -10,6 +10,7 @@ class TorrentFilterStore {
   searchFilter = '';
   statusFilter: Array<TorrentStatus> = [];
   tagFilter: Array<string> = [];
+  categoryFilter: Array<string> = [];
   trackerFilter: Array<string> = [];
 
   filterTrigger = false;
@@ -20,6 +21,8 @@ class TorrentFilterStore {
     statusSizes: {},
     tagCounts: {},
     tagSizes: {},
+    categoryCounts: {},
+    categorySizes: {},
     trackerCounts: {},
     trackerSizes: {},
   };
@@ -30,6 +33,7 @@ class TorrentFilterStore {
       this.searchFilter !== '' ||
       this.statusFilter.length ||
       this.tagFilter.length ||
+      this.categoryFilter.length ||
       this.trackerFilter.length
     );
   }
@@ -43,6 +47,7 @@ class TorrentFilterStore {
     this.searchFilter = '';
     this.statusFilter = [];
     this.tagFilter = [];
+    this.categoryFilter = [];
     this.trackerFilter = [];
     this.filterTrigger = !this.filterTrigger;
   }
@@ -83,6 +88,19 @@ class TorrentFilterStore {
     tags.splice(1, 0, 'untagged');
 
     this.computeFilters(tags, this.tagFilter, filter, event);
+    this.filterTrigger = !this.filterTrigger;
+  }
+
+  setCategoryFilters(filter: string, event: KeyboardEvent | MouseEvent | TouchEvent) {
+    const categories = Object.keys(this.taxonomy.categoryCounts).sort((a, b) => {
+      if (a === 'uncategorized') return -1;
+      else if (b === 'uncategorized') return 1;
+      else return a.localeCompare(b);
+    });
+    categories.splice(categories.indexOf('uncategorized'), 1);
+    categories.splice(1, 0, 'uncategorized');
+
+    this.computeFilters(categories, this.categoryFilter, filter, event);
     this.filterTrigger = !this.filterTrigger;
   }
 

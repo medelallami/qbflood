@@ -17,6 +17,8 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
     statusSizes: {'': 0},
     tagCounts: {'': 0, untagged: 0},
     tagSizes: {},
+    categoryCounts: {'': 0, uncategorized: 0},
+    categorySizes: {},
     trackerCounts: {'': 0},
     trackerSizes: {},
   };
@@ -67,6 +69,8 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
       statusSizes: {...this.taxonomy.statusSizes},
       tagCounts: {...this.taxonomy.tagCounts},
       tagSizes: {...this.taxonomy.tagSizes},
+      categoryCounts: {...this.taxonomy.categoryCounts},
+      categorySizes: {...this.taxonomy.categorySizes},
       trackerCounts: {...this.taxonomy.trackerCounts},
       trackerSizes: {...this.taxonomy.trackerSizes},
     };
@@ -81,6 +85,8 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
     this.taxonomy.statusSizes[''] = 0;
     this.taxonomy.tagCounts = {'': 0, untagged: 0};
     this.taxonomy.tagSizes = {};
+    this.taxonomy.categoryCounts = {'': 0, uncategorized: 0};
+    this.taxonomy.categorySizes = {};
     this.taxonomy.trackerCounts = {'': 0};
     this.taxonomy.trackerSizes = {};
   };
@@ -90,6 +96,7 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
 
     this.taxonomy.statusCounts[''] = length;
     this.taxonomy.tagCounts[''] = length;
+    this.taxonomy.categoryCounts[''] = length;
     this.taxonomy.trackerCounts[''] = length;
 
     const taxonomyDiffs = jsonpatch.compare(this.lastTaxonomy, this.taxonomy);
@@ -108,6 +115,8 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
     this.incrementStatusSizes(torrentProperties.status, torrentProperties.sizeBytes);
     this.incrementTagCounts(torrentProperties.tags);
     this.incrementTagSizes(torrentProperties.tags, torrentProperties.sizeBytes);
+    this.incrementCategoryCounts(torrentProperties.category);
+    this.incrementCategorySizes(torrentProperties.category, torrentProperties.sizeBytes);
     this.incrementTrackerCounts(torrentProperties.trackerURIs);
     this.incrementTrackerSizes(torrentProperties.trackerURIs, torrentProperties.sizeBytes);
   };
@@ -195,6 +204,24 @@ class TaxonomyService extends BaseService<TaxonomyServiceEvents> {
         this.taxonomy.tagSizes[tag] = sizeBytes;
       }
     });
+  }
+
+  incrementCategoryCounts(category: TorrentProperties['category']) {
+    const key = typeof category === 'string' && category.length > 0 ? category : 'uncategorized';
+    if (this.taxonomy.categoryCounts[key] != null) {
+      this.taxonomy.categoryCounts[key] += 1;
+    } else {
+      this.taxonomy.categoryCounts[key] = 1;
+    }
+  }
+
+  incrementCategorySizes(category: TorrentProperties['category'], sizeBytes: TorrentProperties['sizeBytes']) {
+    const key = typeof category === 'string' && category.length > 0 ? category : 'uncategorized';
+    if (this.taxonomy.categorySizes[key] != null) {
+      this.taxonomy.categorySizes[key] += sizeBytes;
+    } else {
+      this.taxonomy.categorySizes[key] = sizeBytes;
+    }
   }
 
   incrementTrackerCounts(trackers: TorrentProperties['trackerURIs']) {

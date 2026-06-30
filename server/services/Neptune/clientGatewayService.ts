@@ -306,6 +306,7 @@ class NeptuneClientGatewayService extends ClientGatewayService {
               torrent.download_rate,
               torrent.upload_rate,
             ),
+            category: '',
             tags: torrent.tags,
             trackerURIs,
             upRate: torrent.upload_rate,

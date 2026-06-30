@@ -1,8 +1,11 @@
 import {FC, ReactNode} from 'react';
 import {useDropzone} from 'react-dropzone';
 
+import SettingStore from '@client/stores/SettingStore';
+import TorrentActions from '@client/actions/TorrentActions';
 import UIStore from '@client/stores/UIStore';
 
+import type {AddTorrentByFileOptions} from '@shared/schema/api/torrents';
 import type {ProcessedFiles} from '@client/components/general/form-elements/FileDropzone';
 
 const handleFileDrop = (files: Array<File>) => {
@@ -19,6 +22,18 @@ const handleFileDrop = (files: Array<File>) => {
       }
 
       if (processedFiles.length === files.length && processedFiles[0] != null) {
+        const autoStart = SettingStore.floodSettings.startTorrentsOnLoad !== false;
+
+        if (autoStart) {
+          const options: AddTorrentByFileOptions = {
+            files: processedFiles.map((f) => f.data) as [string, ...string[]],
+            destination: '',
+            start: true,
+          };
+          TorrentActions.addTorrentsByFiles(options);
+          return;
+        }
+
         UIStore.setActiveModal({id: 'add-torrents', tab: 'by-file', files: processedFiles});
       }
     };

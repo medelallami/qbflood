@@ -6,6 +6,12 @@
 [![Crowdin](https://badges.crowdin.net/flood/localized.svg)](https://crowdin.com/project/flood)
 [![Discord server badge](https://img.shields.io/discord/418267176873623553.svg?style=flat-square)](https://discord.gg/Z7yR5Uf)
 
+> **Deprecation notice.** The bundled `jesec/rtorrent-flood` images (distroless and
+> non-distroless) will be removed in the next release. The bundled rTorrent build has been
+> unmaintained for a long time, while upstream rTorrent has resumed active development. See
+> [`docs/RTORRENT-FLOOD-DEPRECATION.md`](./docs/RTORRENT-FLOOD-DEPRECATION.md) for the full
+> timeline, migration paths and recommended replacements.
+
 Flood is a monitoring service for various torrent clients. It's a Node.js service that communicates with your favorite torrent client and serves a decent web UI for administration. [Flood-UI](https://github.com/Flood-UI) organization hosts related projects.
 
 #### Supported Clients

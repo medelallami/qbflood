@@ -70,7 +70,12 @@ const DateCell: FC<{date: number}> = observer(({date}: {date: number}) => {
   return <span>{i18n.date(new Date(date * 1000))}</span>;
 });
 
-const ETACell: FC<{eta: number}> = observer(({eta}: {eta: number}) => (eta ? <Duration value={eta} /> : null));
+const ETACell: FC<{eta: number}> = observer(({eta}: {eta: number}) => {
+  if (eta == null || !Number.isFinite(eta) || eta <= 0) {
+    return <span className="etacell etacell--unknown">—</span>;
+  }
+  return <Duration value={eta} />;
+});
 
 const PeerCell: FC<{peersConnected: number; totalPeers: number}> = observer(
   ({peersConnected, totalPeers}: {peersConnected: number; totalPeers: number}) => {

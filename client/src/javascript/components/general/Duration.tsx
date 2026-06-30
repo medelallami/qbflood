@@ -47,6 +47,21 @@ const Duration: FC<DurationProps> = ({suffix, value}: DurationProps) => {
     return null;
   }
 
+  // Guard against non-finite JSON round-trips (e.g. Infinity/NaN) and
+  // negative-but-not-sentinel values that would render as 'NaNm' or
+  // regress into the negative-year branch.
+  if (!Number.isFinite(value)) {
+    return (
+      <span className="duration duration--infinity" aria-label="unknown">
+        —
+      </span>
+    );
+  }
+
+  if (value < -1) {
+    return null;
+  }
+
   let content = null;
   let suffixElement = null;
 

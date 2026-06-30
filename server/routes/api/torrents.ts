@@ -177,7 +177,9 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       });
 
       if (finalDestination == null) {
-        const {code, message} = accessDeniedError();
+        const {code, message} = accessDeniedError(
+          'Destination is not allowed. Verify the destination matches --allowedpath or torrent client settings.',
+        );
         return reply.status(403).send({code, message});
       }
 
@@ -232,7 +234,9 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
       });
 
       if (finalDestination == null) {
-        const {code, message} = accessDeniedError();
+        const {code, message} = accessDeniedError(
+          'Destination is not allowed. Verify the destination matches --allowedpath or torrent client settings.',
+        );
         return reply.status(403).send({code, message});
       }
 

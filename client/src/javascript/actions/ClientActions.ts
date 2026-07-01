@@ -49,10 +49,19 @@ const ClientActions = {
   saveSetting: async <T extends ClientSetting>(property: T, data: ClientSettings[T]): Promise<void> =>
     ClientActions.saveSettings({[property]: data}),
 
-  testConnection: async (): Promise<void> =>
-    axios.get(`${baseURI}api/client/connection-test`).then(() => {
-      // do nothing.
-    }),
+  testConnection: async (): Promise<boolean> =>
+    axios.get(`${baseURI}api/client/connection-test`).then(
+      () => true,
+      (err: unknown) => {
+        AlertStore.add({
+          id: 'general.error.unknown',
+          type: 'error',
+          detail:
+            (err as {message?: string})?.message ?? 'Failed to reach the torrent client.',
+        });
+        return false;
+      },
+    ),
 } as const;
 
 export default ClientActions;

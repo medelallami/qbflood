@@ -452,7 +452,19 @@ class ClientRequestManager {
       .post(`${this.apiBase}/torrents/add`, form, {
         headers,
       })
-      .then(() => {
+      .then((response) => {
+        // qB returns HTTP 200 even when the body is the literal
+        // string 'Fails.' emitted by the Web API for invalid
+        // payloads (#590). Inspect the body and surface the
+        // failure as a thrown error so the gateway treats the
+        // request as an error and Flood's UI alerts can carry
+        // the reason.
+        const data = response.data;
+        if (typeof data === 'string' && data.trim().toLowerCase() === 'fails.') {
+          throw new Error(
+            "qBittorrent rejected the torrent metafile submission with body 'Fails.'. The torrent was likely invalid for qBittorrent (corrupt, duplicate, or unsupported file).",
+          );
+        }
         // returns nothing
       });
   }

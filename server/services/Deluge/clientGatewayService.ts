@@ -290,34 +290,68 @@ class DelugeClientGatewayService extends BaseClientGatewayService implements Cli
   }
 
   async fetchTorrentList(): Promise<TorrentListSummary> {
-    return this.clientRequestManager
-      .coreGetTorrentsStatus([
-        'active_time',
-        'comment',
-        'download_location',
-        'download_payload_rate',
-        'eta',
-        'finished_time',
-        'message',
-        'name',
-        'num_peers',
-        'num_seeds',
-        'private',
-        'progress',
-        'ratio',
-        'sequential_download',
-        'state',
-        'super_seeding',
-        'time_added',
-        'total_done',
-        'total_payload_download',
-        'total_payload_upload',
-        'total_peers',
-        'total_size',
-        'total_seeds',
-        'tracker_host',
-        'upload_payload_rate',
-      ])
+    const STATUS_KEYS = [
+      'active_time',
+      'comment',
+      'download_location',
+      'download_payload_rate',
+      'eta',
+      'finished_time',
+      'message',
+      'name',
+      'num_peers',
+      'num_seeds',
+      'private',
+      'progress',
+      'ratio',
+      'sequential_download',
+      'state',
+      'super_seeding',
+      'time_added',
+      'total_done',
+      'total_payload_download',
+      'total_payload_upload',
+      'total_peers',
+      'total_size',
+      'total_seeds',
+      'tracker_host',
+      'upload_payload_rate',
+    ] as const;
+
+    const KEY_INDEX_KEYS = ['id'] as const;
+
+    const fetchStatuses = async () => {
+      const torrentsIndex = await this.clientRequestManager.coreGetTorrentsStatus(
+        KEY_INDEX_KEYS as unknown as Array<string>,
+        {},
+        false,
+      );
+      const hashes = Object.keys(torrentsIndex);
+
+      if (hashes.length === 0) {
+        return {} as Record<string, any>;
+      }
+
+      const torrentsStatus = await this.clientRequestManager.coreGetTorrentsStatus(
+        STATUS_KEYS as unknown as Array<string>,
+        {id: hashes},
+        false,
+      );
+      const merged = {} as Record<string, any>;
+
+      hashes.forEach((hash) => {
+        const indexEntry = (torrentsIndex as Record<string, any>)[hash];
+        const statusEntry = (torrentsStatus as Record<string, any>)?.[hash];
+        if (statusEntry == null) {
+          return;
+        }
+        merged[hash] = {...indexEntry, ...statusEntry};
+      });
+
+      return merged;
+    };
+
+    return fetchStatuses()
       .then(this.processClientRequestSuccess, this.processClientRequestError)
       .then(async (torrentsStatus) => {
         this.emit('PROCESS_TORRENT_LIST_START');

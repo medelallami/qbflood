@@ -133,12 +133,21 @@ const FloodActions = {
 } as const;
 
 const handleProlongedInactivity = () => {
-  FloodActions.closeActivityStream();
+  // No-op: previously we closed the SSE after 30s of inactivity,
+  // but every close forced a full reconnect on the next focus
+  // event, which together with browser-side throttling of timers
+  // in background tabs caused the title-bar stats to age out and
+  // become stale (#456). The server already maintains a
+  // keep-alive ping on the stream so the SSE remains cheap
+  // while hidden.
 };
 
 const handleWindowVisibilityChange = () => {
   if (document.hidden) {
-    // After 30 seconds of inactivity, we stop the event stream.
+    // Schedule a no-op so the visibilitychange path remains
+    // exercised even when the tab is in the background. The
+    // timeout itself is irrelevant to the bug fix; we keep it
+    // to avoid touching the surrounding handler shape.
     visibilityChangeTimeout = setTimeout(handleProlongedInactivity, 1000 * 30);
   } else {
     clearTimeout(visibilityChangeTimeout);

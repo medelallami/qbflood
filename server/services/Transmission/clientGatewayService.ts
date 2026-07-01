@@ -10,9 +10,9 @@ import type {UserInDatabase} from '@shared/schema/Auth';
 import type {TransmissionConnectionSettings} from '@shared/schema/ClientConnectionSettings';
 import type {SetClientSettingsOptions} from '@shared/types/api/client';
 import type {
+  AddTorrentsTrackersOptions,
   CheckTorrentsOptions,
   DeleteTorrentsOptions,
-  AddTorrentsTrackersOptions,
   MoveTorrentsOptions,
   SetTorrentContentsPropertiesOptions,
   SetTorrentsPriorityOptions,
@@ -37,6 +37,19 @@ import * as geoip from '../geoip';
 import ClientRequestManager from './clientRequestManager';
 import {TransmissionPriority, TransmissionTorrentsSetArguments} from './types/TransmissionTorrentsMethods';
 import torrentPropertiesUtil from './util/torrentPropertiesUtil';
+
+const encodeTransmissionDownloadDir = (destination: string): string => {
+  if (destination.includes('\\')) {
+    throw new Error(
+      `download-dir contains a backslash (\\). On Windows, use forward slashes (/). Path: ${destination}`,
+    );
+  }
+  const sep = destination.includes('/') ? '/' : '\\';
+  return destination
+    .split(sep)
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
+};
 
 class TransmissionClientGatewayService extends BaseClientGatewayService implements ClientGatewayService {
   clientRequestManager: ClientRequestManager;
@@ -64,7 +77,7 @@ class TransmissionClientGatewayService extends BaseClientGatewayService implemen
           (await this.clientRequestManager
             .addTorrent({
               metainfo: file,
-              'download-dir': destination,
+              'download-dir': encodeTransmissionDownloadDir(destination),
               paused: !start,
             })
             .then(this.processClientRequestSuccess, this.processClientRequestError)
@@ -115,7 +128,7 @@ class TransmissionClientGatewayService extends BaseClientGatewayService implemen
             this.clientRequestManager
               .addTorrent({
                 filename: url,
-                'download-dir': destination,
+                'download-dir': encodeTransmissionDownloadDir(destination),
                 paused: !start,
               })
               .then(this.processClientRequestSuccess, this.processClientRequestError)

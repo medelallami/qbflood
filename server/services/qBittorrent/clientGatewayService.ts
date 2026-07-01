@@ -577,8 +577,12 @@ class QBittorrentClientGatewayService extends BaseClientGatewayService implement
           piecesHashOnCompletion: false,
           piecesMemoryMax: 0,
           protocolPex: preferences.pex,
-          throttleGlobalDownSpeed: preferences.dl_limit,
-          throttleGlobalUpSpeed: preferences.up_limit,
+          throttleGlobalDownSpeed: preferences.use_alt_speed_limits === true
+            ? preferences.alt_dl_limit
+            : preferences.dl_limit,
+          throttleGlobalUpSpeed: preferences.use_alt_speed_limits === true
+            ? preferences.alt_up_limit
+            : preferences.up_limit,
           throttleMaxPeersNormal: 0,
           throttleMaxPeersSeed: 0,
           throttleMaxDownloads: 0,
@@ -604,6 +608,11 @@ class QBittorrentClientGatewayService extends BaseClientGatewayService implement
         pex: settings.protocolPex,
         dl_limit: settings.throttleGlobalDownSpeed,
         up_limit: settings.throttleGlobalUpSpeed,
+        // When the user actively tweaks a global speed limit via the
+        // Flood sidebar dropdown we clear the alternate-speed switch
+        // so the user's pick actually sticks (/dl_limit is overridden
+        // by alt_dl_limit on qBittorrent).
+        use_alt_speed_limits: false,
         max_uploads_per_torrent: settings.throttleMaxUploads,
         max_uploads: settings.throttleMaxUploadsGlobal,
       })

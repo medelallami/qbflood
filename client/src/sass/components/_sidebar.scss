@@ -103,7 +103,14 @@
     transition: transform 0.2s;
 
     @media (max-width: 720px) {
-      transform: translateX(-120px);
+      position: absolute;
+      transform: translateX(-100%);
+      width: 240px;
+      // box-shadow stays attached even when the panel is fully
+      // translated off-screen, leaving the slim vertical line
+      // the reporter saw in #409 on MobileSafari; clip instead
+      // so we leave no visual residue on mobile widths.
+      box-shadow: none;
     }
   }
 }

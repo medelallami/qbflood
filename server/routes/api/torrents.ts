@@ -833,11 +833,31 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
         const fileExt = path.extname(file);
 
         // @fastify/send expects a urlencoded path, not the actual filesystem path.
-        const result = await send(request.raw, encodeURI(file), {
-          acceptRanges: true,
-          lastModified: true,
-          dotfiles: 'allow',
-        });
+        let result;
+        try {
+          result = await send(request.raw, encodeURI(file), {
+            acceptRanges: true,
+            lastModified: true,
+            dotfiles: 'allow',
+          });
+        } catch (err) {
+          const errno = (err as NodeJS.ErrnoException).code;
+          if (errno === 'ENOENT' || errno === 'ENOTDIR' || errno === 'EACCES') {
+            // The torrent client may have removed the file between our
+            // existence pre-check and the actual stream open. Convert
+            // the raw Node error into our schema error response so the
+            // client can show a meaningful toast instead of a generic
+            // 500. (#641)
+            const fileError =
+              errno === 'EACCES'
+                ? accessDeniedError()
+                : fileNotFoundError();
+            const {code, message} = fileError;
+            const statusCode = errno === 'EACCES' ? 403 : 404;
+            return reply.status(statusCode).send({code, message});
+          }
+          throw err;
+        }
 
         const statusCode = result.statusCode;
         if (result.type === 'error') {

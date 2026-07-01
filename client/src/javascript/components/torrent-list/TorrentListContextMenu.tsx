@@ -133,16 +133,38 @@ export const getContextMenuItems = (torrent: TorrentProperties): Array<ContextMe
       clickHandler: (e) => {
         e.preventDefault();
 
-        TorrentStore.selectedTorrents.forEach((hash) => {
-          const link = document.createElement('a');
+        // WebKit-based browsers (Safari, mobile Safari) drop
+        // additional <a>.click() calls when they happen in the
+        // same microtask as a click, so calling link.click()
+        // synchronously per-torrent only triggers the last
+        // download ('#405). Space the calls out by a frame so the
+        // browser treats each one as a separate user-initiated
+        // download.
+        const hashes = [...TorrentStore.selectedTorrents];
+        if (hashes.length === 0) {
+          return;
+        }
 
-          link.download = '';
-          link.href = `${ConfigStore.baseURI}api/torrents/${hash}/contents/all/data`;
-          link.style.display = 'none';
+        hashes.forEach((hash, index) => {
+          window.setTimeout(() => {
+            const link = document.createElement('a');
 
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+            link.download = '';
+            link.href = `${ConfigStore.baseURI}api/torrents/${hash}/contents/all/data`;
+            link.style.display = 'none';
+
+            document.body.appendChild(link);
+            link.click();
+
+            // Remove immediately if it's the last item, otherwise
+            // schedule the removal so we don't yank it out from
+            // under the user-agent as the download starts.
+            if (index === hashes.length - 1) {
+              document.body.removeChild(link);
+            } else {
+              window.setTimeout(() => document.body.removeChild(link), 60_000);
+            }
+          }, index * 100);
         });
       },
     },

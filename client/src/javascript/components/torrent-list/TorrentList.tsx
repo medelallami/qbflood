@@ -60,6 +60,15 @@ const TorrentList: FC = observer(() => {
       return;
     }
 
+    // Modals that aren't INPUT/TEXTAREA inside would still
+    // receive Ctrl+A and a torrent list select-all would mutate
+    // the action's target. Bail out when a modal is open
+    // (#410) so the browser's default text-select behaviour
+    // runs unhandled.
+    if (UIStore.activeModal != null) {
+      return;
+    }
+
     if ((metaKey || ctrlKey) && key === 'a') {
       e.preventDefault();
       TorrentStore.selectAllTorrents();

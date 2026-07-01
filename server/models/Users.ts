@@ -95,10 +95,23 @@ class Users {
    * @return {Promise<UserInDatabase>} - Returns the created user or rejects with error.
    */
   async createUser(credentials: Credentials, shouldHash = true): Promise<UserInDatabase> {
-    const hashed = shouldHash ? await hashPassword(credentials.password).catch(() => undefined) : credentials.password;
+    let hashed: string | undefined = credentials.password;
+    if (shouldHash) {
+      try {
+        hashed = await hashPassword(credentials.password);
+      } catch (err) {
+        // argon2 failures (typically missing native binding on a
+        // minimal Docker image) used to be swallowed here, which
+        // left `password: undefined` and a downstream NeDB
+        // error that surfaced as a 500 with body {'message':''}
+        // (#403). Rethrow so the caller can produce a real
+        // diagnostic.
+        throw err instanceof Error ? err : new Error(String(err));
+      }
+    }
 
     if (this.db == null || hashed == null) {
-      throw new Error();
+      throw new Error("Password hashing failed.");
     }
 
     return this.db

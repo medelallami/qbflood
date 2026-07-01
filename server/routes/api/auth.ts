@@ -163,7 +163,20 @@ const authRoutes = async (fastify: FastifyInstance) => {
 
       const credentials = req.body;
 
-      const user = await Users.createUser(credentials);
+      let user;
+      try {
+        user = await Users.createUser(credentials);
+      } catch (err) {
+        // Surface the underlying error message rather than
+        // silently returning a 500 with an empty body (#403).
+        const message =
+          err instanceof Error && err.message !== ''
+            ? err.message
+            : 'Failed to create user.';
+        reply.status(500).send({message});
+        return;
+      }
+
       await bootstrapServicesForUser(user);
 
       if (req.query.cookie === 'false') {

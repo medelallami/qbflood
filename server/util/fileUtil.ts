@@ -84,6 +84,20 @@ export async function existAsync(path: string): Promise<boolean> {
   return true;
 }
 
+// Best-effort permission probe: returns true if `target` can be
+// written to by the Flood process. Used by the move operation to
+// fail fast when the source directory has lost writability for
+// the Flood user (see jesec/flood#507). Errors are swallowed so
+// the caller can treat 'not writable' uniformly.
+export async function isDirWritable(target: string): Promise<boolean> {
+  try {
+    await fsp.access(target, fsp.constants.W_OK);
+  } catch {
+    return false;
+  }
+  return true;
+}
+
 export async function cleanupEmptyDirectories(directory: string): Promise<boolean> {
   if (!isAllowedPath(directory)) {
     return false;

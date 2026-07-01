@@ -33,7 +33,7 @@ import {move} from 'fs-extra';
 import sanitize from 'sanitize-filename';
 
 import {fetchUrls} from '../../util/fetchUtil';
-import {cleanupEmptyDirectories, isAllowedPath, sanitizePath} from '../../util/fileUtil';
+import {cleanupEmptyDirectories, isAllowedPath, isDirWritable, sanitizePath} from '../../util/fileUtil';
 import {getComment, setCompleted, setTrackers, addTrackers} from '../../util/torrentFileUtil';
 import BaseClientGatewayService, {type ClientGatewayService} from '../clientGatewayService';
 import * as geoip from '../geoip';
@@ -464,6 +464,34 @@ class RTorrentClientGatewayService extends BaseClientGatewayService implements C
     await this.stopTorrents({hashes});
 
     await fs.promises.mkdir(destination, {recursive: true});
+
+    // Permission pre-checks (#507). If the source directory lost
+    // writability for the Flood user (e.g. chown-ed elsewhere)
+    // the move below would silently copy no files, leaving the
+    // torrent pointing at the new directory with the data in
+    // place. Probe the source before we commit to moving.
+    if (moveFiles) {
+      const sources = new Set<string>();
+      hashes.forEach((hash) => {
+        const torrent = this.services?.torrentService.getTorrent(hash);
+        if (torrent?.directory != null) {
+          sources.add(path.resolve(torrent.directory));
+        }
+      });
+      sources.add(destination);
+
+      const notWritable: string[] = [];
+      for (const dir of sources) {
+        if (!(await isDirWritable(dir))) {
+          notWritable.push(dir);
+        }
+      }
+      if (notWritable.length > 0) {
+        throw new Error(
+          `Cannot move torrents -- destination or source is not writable: ${notWritable.join(', ')}`,
+        );
+      }
+    }
 
     if (moveFiles) {
       const isMultiFile = await this.clientRequestManager

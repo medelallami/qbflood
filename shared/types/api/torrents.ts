@@ -61,6 +61,10 @@ export interface MoveTorrentsOptions {
 export interface StartTorrentsOptions {
   // An array of string representing hashes of torrents to be started
   hashes: Array<TorrentProperties['hash']>;
+  // When true, force-start torrents that have hit their ratio /
+  // seeding-time limits. Only qBittorrent honours this today; the
+  // field is ignored by other client adapters.
+  force?: boolean;
 }
 
 // POST /api/torrents/stop

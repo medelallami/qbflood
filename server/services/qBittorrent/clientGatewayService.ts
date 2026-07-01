@@ -399,9 +399,9 @@ class QBittorrentClientGatewayService extends BaseClientGatewayService implement
       .then(this.processClientRequestSuccess, this.processClientRequestError);
   }
 
-  async startTorrents({hashes}: StartTorrentsOptions): Promise<void> {
+  async startTorrents({hashes, force}: StartTorrentsOptions): Promise<void> {
     return this.clientRequestManager
-      .torrentsResume(hashes)
+      .torrentsResume(hashes, force === true)
       .then(this.processClientRequestSuccess, this.processClientRequestError);
   }
 

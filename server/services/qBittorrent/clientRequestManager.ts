@@ -329,18 +329,23 @@ class ClientRequestManager {
       });
   }
 
-  async torrentsResume(hashes: Array<string>): Promise<void> {
+  async torrentsResume(hashes: Array<string>, force = false): Promise<void> {
     const method = isApiVersionAtLeast(await this.apiVersion, '2.11.0') ? 'start' : 'resume';
+    const params = new URLSearchParams({
+      hashes: hashes.join('|').toLowerCase(),
+    });
+
+    // qB api 2.11.0+ accepts force_start=true alongside hashes on
+    // the /torrents/start endpoint. Older daemons are unware of
+    // the flag; we just don't send it.
+    if (force && method === 'start') {
+      params.set('force_start', 'true');
+    }
+
     return axios
-      .post(
-        `${this.apiBase}/torrents/${method}`,
-        new URLSearchParams({
-          hashes: hashes.join('|').toLowerCase(),
-        }),
-        {
-          headers: await this.getRequestHeaders(),
-        },
-      )
+      .post(`${this.apiBase}/torrents/${method}`, params, {
+        headers: await this.getRequestHeaders(),
+      })
       .then(() => {
         // returns nothing
       });

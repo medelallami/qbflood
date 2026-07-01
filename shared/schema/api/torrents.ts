@@ -1,5 +1,5 @@
 import type {infer as zodInfer} from 'zod';
-import {array, boolean, number, record, strictObject, string} from 'zod';
+import {array, boolean, number, record, strictObject, string, z} from 'zod';
 
 import {tagSchema, tagsSchema} from './tags';
 
@@ -88,6 +88,7 @@ const torrentHashesSchema = array(string()).nonempty();
 // POST /api/torrents/start
 export const startTorrentsSchema = strictObject({
   hashes: torrentHashesSchema,
+  force: z.boolean().optional(),
 }).strip();
 
 // POST /api/torrents/stop

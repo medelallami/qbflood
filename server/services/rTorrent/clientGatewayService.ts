@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -11,6 +12,7 @@ import type {UserInDatabase} from '@shared/schema/Auth';
 import type {RTorrentConnectionSettings} from '@shared/schema/ClientConnectionSettings';
 import type {SetClientSettingsOptions} from '@shared/types/api/client';
 import type {
+  AddTorrentsTrackersOptions,
   CheckTorrentsOptions,
   DeleteTorrentsOptions,
   MoveTorrentsOptions,
@@ -19,7 +21,6 @@ import type {
   SetTorrentsPriorityOptions,
   SetTorrentsSequentialOptions,
   SetTorrentsTrackersOptions,
-  AddTorrentsTrackersOptions,
   StartTorrentsOptions,
   StopTorrentsOptions,
 } from '@shared/types/api/torrents';
@@ -32,6 +33,7 @@ import type {TransferSummary} from '@shared/types/TransferData';
 import {move} from 'fs-extra';
 import sanitize from 'sanitize-filename';
 
+import {getTempPath} from '../../models/TemporaryStorage';
 import {fetchUrls} from '../../util/fetchUtil';
 import {cleanupEmptyDirectories, isAllowedPath, isDirWritable, sanitizePath} from '../../util/fileUtil';
 import {getComment, setCompleted, setTrackers, addTrackers} from '../../util/torrentFileUtil';
@@ -257,14 +259,44 @@ class RTorrentClientGatewayService extends BaseClientGatewayService implements C
             })),
           ),
         ])
-        .then(this.processClientRequestSuccess, this.processRTorrentRequestError);
-    } else {
+        .then(this.processClientRequestSuccess, this.processRTorrentRequestError)
+        .then((response: Array<Array<string | number>>) => {
+          const hashes = response.flat(2).filter((value) => typeof value === 'string') as string[];
+          result.push(...hashes);
+        });
+    } else if (this.availableMethodCalls.methodList.includes(start ? 'load.raw_start' : 'load.raw')) {
       await Promise.all(
         processedFiles.map(async (file) => {
           await this.clientRequestManager
             .methodCall(start ? 'load.raw_start' : 'load.raw', [
               '',
               Buffer.from(file, 'base64'),
+              ...(await this.appendTorrentCommentCall(file, additionalCalls)),
+            ])
+            .then(this.processClientRequestSuccess, this.processRTorrentRequestError);
+        }),
+      );
+    } else {
+      // Older rTorrent (e.g. 0.9.8 on legacy installs) does not expose
+      // load.raw / load.raw_start. Buffer-backed payloads must be persisted
+      // to a temp file and loaded via the file-path based APIs instead,
+      // otherwise the daemon rejects the call with a 500. Mirrors the
+      // pre-23da1e5d behaviour.
+      await Promise.all(
+        processedFiles.map(async (file) => {
+          const tempPath = getTempPath(`${Date.now()}-${crypto.randomBytes(8).toString('hex')}.torrent`);
+          await fs.promises.writeFile(tempPath, Buffer.from(file, 'base64'), {mode: 0o664});
+          setTimeout(() => {
+            try {
+              fs.unlinkSync(tempPath);
+            } catch {
+              // do nothing.
+            }
+          }, 1000 * 60 * 5);
+          await this.clientRequestManager
+            .methodCall(start ? 'load.start' : 'load.normal', [
+              '',
+              tempPath,
               ...(await this.appendTorrentCommentCall(file, additionalCalls)),
             ])
             .then(this.processClientRequestSuccess, this.processRTorrentRequestError);
@@ -487,9 +519,7 @@ class RTorrentClientGatewayService extends BaseClientGatewayService implements C
         }
       }
       if (notWritable.length > 0) {
-        throw new Error(
-          `Cannot move torrents -- destination or source is not writable: ${notWritable.join(', ')}`,
-        );
+        throw new Error(`Cannot move torrents -- destination or source is not writable: ${notWritable.join(', ')}`);
       }
     }
 

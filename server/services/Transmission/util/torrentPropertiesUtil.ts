@@ -49,7 +49,7 @@ const getTorrentStatus = (
     }
   }
 
-  if (haveValid === totalSize) {
+  if (totalSize > 0 && haveValid === totalSize) {
     statuses.push('complete');
   }
 

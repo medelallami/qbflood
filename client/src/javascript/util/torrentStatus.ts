@@ -21,15 +21,29 @@ export const torrentStatusClasses = (
   });
 
 export const torrentStatusEffective = (status: TorrentProperties['status']): TorrentProperties['status'][number] => {
-  let result: TorrentProperties['status'][number] = 'stopped';
+  // Terminal states dominate. Order goes: error -> warning ->
+  // moving -> checking -> seeding -> downloading -> stopped ->
+  // (everything else). We pick the first matching state in this
+  // order so that a torrent reported both 'seeding' and
+  // 'downloading' (which can happen when the client briefly flips
+  // between the two during a transition or when partial -- and
+  // the user is reporting the wrong effective state in #559) is
+  // displayed as 'seeding'.
+  const priority: Array<TorrentProperties['status'][number]> = [
+    'error',
+    'warning',
+    'moving',
+    'checking',
+    'seeding',
+    'downloading',
+    'stopped',
+  ];
 
-  ['warning', 'error', 'moving', 'checking', 'stopped', 'downloading', 'seeding'].some((state) => {
-    if (status.includes(state as TorrentProperties['status'][number])) {
-      result = state as TorrentProperties['status'][number];
-      return true;
+  for (const candidate of priority) {
+    if (status.includes(candidate)) {
+      return candidate;
     }
-    return false;
-  });
+  }
 
-  return result;
+  return 'stopped';
 };

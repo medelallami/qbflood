@@ -493,13 +493,23 @@ class RTorrentClientGatewayService extends BaseClientGatewayService implements C
           }
 
           const sourceDirectory = path.resolve(directory);
-          const destDirectory = isMultiFile[index]
+          const desiredDestDirectory = isMultiFile[index]
             ? path.resolve(isBasePath ? destination : path.join(destination, name))
             : path.resolve(destination);
 
-          if (sourceDirectory === destDirectory) {
+          // rTorrent's d.directory.set takes an absolute directory; setting
+          // it to the parent of the current directory is a no-op but the
+          // move() pass below would otherwise relocate files into a
+          // doubled path when a multi-file torrent already lives inside
+          // the destination folder. (#573) Short-circuit when the desired
+          // destination matches the source or one of its ancestors so
+          // the user can hit 'Set location' with the displayed path
+          // without Flood rearranging the files.
+          if (desiredDestDirectory === sourceDirectory || sourceDirectory.startsWith(desiredDestDirectory + path.sep)) {
             return;
           }
+
+          const destDirectory = desiredDestDirectory;
 
           const contents = await this.getTorrentContents(hash);
 
@@ -530,12 +540,29 @@ class RTorrentClientGatewayService extends BaseClientGatewayService implements C
 
     const hashesToRestart: Array<string> = [];
     const methodCalls = hashes.reduce((accumulator: MultiMethodCalls, hash) => {
+      const torrent = this.services?.torrentService.getTorrent(hash);
+      const sourceDir = torrent?.directory ? path.resolve(torrent.directory) : null;
+      const desiredDir = path.resolve(destination);
+
+      // Skip the directory.set / directory_base.set call when the
+      // request would either re-set the same directory or walk up
+      // the tree (which would otherwise cause rTorrent's
+      // directory.set to prepend the original directory and
+      // produce a doubled path -- #573).
+      if (sourceDir == null) {
+        return accumulator;
+      }
+      const isAncestor = sourceDir === desiredDir || sourceDir.startsWith(desiredDir + path.sep);
+      if (isAncestor && !moveFiles) {
+        return accumulator;
+      }
+
       accumulator.push({
         methodName: isBasePath ? 'd.directory_base.set' : 'd.directory.set',
         params: [hash, destination],
       });
 
-      if (!this.services?.torrentService.getTorrent(hash).status.includes('stopped')) {
+      if (!torrent.status.includes('stopped')) {
         hashesToRestart.push(hash);
       }
 

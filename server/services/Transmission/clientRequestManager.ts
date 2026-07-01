@@ -205,15 +205,40 @@ class ClientRequestManager {
       });
   }
 
-  async startTorrents(ids: TransmissionTorrentIDs): Promise<void> {
+  async startTorrents(ids: TransmissionTorrentIDs, force = false): Promise<void> {
+    if (force) {
+      return axios
+        .post<TransmissionRPCResponse>(
+          this.rpcURL,
+          {method: 'torrent-start-now', arguments: {ids}},
+          {
+            headers: await this.getRequestHeaders(),
+          },
+        )
+        .then(({data}) => {
+          if (data.result !== 'success') {
+            throw new Error();
+          }
+        });
+    }
+
+    // torrent-start honours the daemon's download queue
+    // (#411). Older daemons that omit 'torrent-start' fall back
+    // to torrent-start-now on a 404.
     return axios
       .post<TransmissionRPCResponse>(
         this.rpcURL,
-        {method: 'torrent-start-now', arguments: {ids}},
+        {method: 'torrent-start', arguments: {ids}},
         {
           headers: await this.getRequestHeaders(),
         },
       )
+      .catch(async (err) => {
+        if ((err as {response?: {status?: number}})?.response?.status === 404) {
+          return this.startTorrents(ids, true);
+        }
+        throw err;
+      })
       .then(({data}) => {
         if (data.result !== 'success') {
           throw new Error();

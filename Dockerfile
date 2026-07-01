@@ -11,6 +11,7 @@
 # publish the result image unless it was composed in a clean environment.
 
 ARG BUILDPLATFORM=amd64
+ARG TARGETPLATFORM=amd64
 ARG NODE_IMAGE=docker.io/node:24-alpine
 
 FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS nodebuild
@@ -29,7 +30,7 @@ RUN pnpm install --frozen-lockfile
 RUN npm run build
 
 # Now get the clean Node.js image
-FROM ${NODE_IMAGE} AS flood
+FROM --platform=$TARGETPLATFORM ${NODE_IMAGE} AS flood
 
 WORKDIR /usr/src/app/
 
@@ -57,7 +58,7 @@ ENTRYPOINT ["npm", "--prefix=/usr/src/app/", "run", "start", "--", "--host=::"]
 # docker exec -it ${container_id} npm --prefix=/usr/src/app/ run start:development:client
 
 # rtorrent-flood image
-FROM docker.io/jesec/rtorrent:master AS rtorrent
+FROM --platform=$TARGETPLATFORM docker.io/jesec/rtorrent:master AS rtorrent
 FROM flood AS rtorrent-flood
 
 # Copy rTorrent

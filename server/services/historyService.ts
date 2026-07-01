@@ -103,8 +103,9 @@ class HistoryService extends BaseService<HistoryServiceEvents> {
   }
 
   async getHistory(): Promise<TransferHistory> {
-    return this.snapshot.getData().then((transferSnapshots) =>
-      transferSnapshots.reduce(
+    try {
+      const transferSnapshots = await this.snapshot.getData();
+      return transferSnapshots.reduce(
         (history, transferSnapshot) => {
           history.download.push(transferSnapshot.download);
           history.upload.push(transferSnapshot.upload);
@@ -113,8 +114,29 @@ class HistoryService extends BaseService<HistoryServiceEvents> {
           return history;
         },
         {upload: [], download: [], timestamps: []} as TransferHistory,
-      ),
-    );
+      );
+    } catch (err) {
+      // On FreeBSD 13.1 and any other path where the on-disk NeDB file
+      // grew above ~2 GiB (issue jesec/flood#636), the underlying
+      // reader throws at open time with a 'RangeError: File size ...
+      // is greater than 2 GiB'. Treat that as a recoverable
+      // condition by dropping the snapshot database and returning an
+      // empty history so Flood can start; the user can rebuild the
+      // view over the next polling cycle.
+      console.error(
+        '[history] failed to read snapshot -- dropping and starting fresh:',
+        (err as Error)?.message ?? err,
+      );
+      try {
+        await this.snapshot.dropDB();
+      } catch (dropErr) {
+        console.error(
+          '[history] failed to drop corrupt snapshot file:',
+          (dropErr as Error)?.message ?? dropErr,
+        );
+      }
+      return {upload: [], download: [], timestamps: []};
+    }
   }
 }
 

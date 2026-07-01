@@ -116,12 +116,15 @@ class ClientRequestManager {
 
       const handleError = (e: Error) => {
         tlsSocket.destroy();
-        this.rpcWithAuth = this.rpc = Promise.reject();
+        this.rpcWithAuth = this.rpc = Promise.reject(e);
         reject(e);
       };
-
       tlsSocket.once('error', handleError);
-      tlsSocket.once('close', handleError);
+      tlsSocket.once('close', () => {
+        if (!tlsSocket.destroyed) {
+          handleError(new Error('Deluge RPC socket closed unexpectedly.'));
+        }
+      });
 
       tlsSocket.on('secureConnect', () => {
         tlsSocket.on('data', (chunk: Buffer) => {

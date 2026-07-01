@@ -36,7 +36,9 @@ const FilesystemBrowserTextbox = forwardRef<HTMLInputElement, FilesystemBrowserT
   ) => {
     const [destination, setDestination] = useState<string>(
       suggested ||
-        SettingStore.floodSettings.torrentDestinations?.[''] ||
+        (SettingStore.floodSettings.UITorrentUseLastDestination !== false
+          ? SettingStore.floodSettings.torrentDestinations?.['']
+          : undefined) ||
         SettingStore.clientSettings?.directoryDefault ||
         '',
     );

@@ -25,6 +25,9 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
   const [filterCategoryEnabled, setFilterCategoryEnabled] = useState<FloodSettings['UISidebarFilterCategory']>(
     SettingStore.floodSettings.UISidebarFilterCategory,
   );
+  const [useLastDestinationEnabled, setUseLastDestinationEnabled] = useState<
+    FloodSettings['UITorrentUseLastDestination']
+  >(SettingStore.floodSettings.UITorrentUseLastDestination ?? true);
 
   const handlePageTitleSpeedToggle = () => {
     const nextValue = !pageTitleSpeedEnabled;
@@ -50,6 +53,11 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
     const nextValue = !filterCategoryEnabled;
     setFilterCategoryEnabled(nextValue);
     onSettingsChange({UISidebarFilterCategory: nextValue});
+  };
+  const handleUseLastDestinationToggle = () => {
+    const nextValue = !useLastDestinationEnabled;
+    setUseLastDestinationEnabled(nextValue);
+    onSettingsChange({UITorrentUseLastDestination: nextValue});
   };
   return (
     <ToggleList
@@ -78,6 +86,11 @@ const MiscUISettingsList: FC<MiscUISettingsListProps> = ({onSettingsChange}: Mis
           label: 'settings.ui.sidebar.filter.category',
           checked: filterCategoryEnabled,
           onClick: handleFilterCategoryToggle,
+        },
+        {
+          label: 'settings.ui.add.use.last.destination',
+          checked: useLastDestinationEnabled,
+          onClick: handleUseLastDestinationToggle,
         },
       ]}
     />

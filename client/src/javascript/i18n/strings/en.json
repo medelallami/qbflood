@@ -219,6 +219,7 @@
   "settings.ui.sidebar.filter.location": "Show location filters",
   "settings.ui.sidebar.filter.tag": "Show tag filters",
   "settings.ui.sidebar.filter.category": "Show category filters",
+  "settings.ui.add.use.last.destination": "Use last destination when adding torrents",
   "settings.ui.sidebar.filter.tracker": "Show tracker filters",
   "settings.ui.torrent.list.progress.percent": "Show percentages",
   "settings.ui.locale": "Locale",

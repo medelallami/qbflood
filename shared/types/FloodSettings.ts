@@ -35,6 +35,11 @@ export interface FloodSettings {
   // currently set to the last used download destinations
   // value of property '' is the default preferred destination
   torrentDestinations?: Record<string, string>;
+  // When true (default for backwards compatibility), Add Torrent
+  // dialogs pre-fill the destination with the location last used
+  // by the user. When false, the torrent client's default
+  // download directory is used instead (see jesec/flood#531).
+  UITorrentUseLastDestination?: boolean;
 
   // Tag selector preference
   UITagSelectorMode?: 'single' | 'multi';

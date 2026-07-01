@@ -28,4 +28,13 @@ EXPOSE 3000
 
 # Flood
 ENV FLOOD_OPTION_HOST="::"
+# NODE_OPTIONS: --jitless disables V8 TurboFan/Sparkplug JIT in older
+# Node builds that emit buggy machine code on Cortex-A72 hosts (RPi 4)
+# in the JIT tier. Symptom was 'Fatal error in , line 0 -- unreachable
+# code -- FailureMessage Object: 0xbe...0c' (jesec/flood#390). The
+# interpreter is much slower than JIT for hot paths, but is ready
+# immediately and avoids the FATAL exit. Operators on aarch64 can
+# always pass --NODE_OPTIONS_JITLESS=false to switch the JIT back
+# on (test the binary at scale first).
+ENV NODE_OPTIONS="--jitless"
 ENTRYPOINT ["/sbin/tini", "--", "flood"]

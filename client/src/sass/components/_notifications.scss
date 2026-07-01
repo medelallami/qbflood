@@ -38,11 +38,14 @@ $notification--sub-heading--color: color.adjust(color.adjust(#7189a8, $lightness
   }
 
   &__list {
+    max-height: 50vh;
     min-height: 30px;
     opacity: 1;
+    overflow-y: auto;
     position: relative;
     transition: opacity 0.25s;
     white-space: normal;
+    width: 250px;
     word-wrap: break-word;
 
     &__item {

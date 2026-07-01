@@ -12,6 +12,7 @@ import type {DelugeConnectionSettings} from '@shared/schema/ClientConnectionSett
 import type {SetClientSettingsOptions} from '@shared/types/api/client';
 import type {
   CheckTorrentsOptions,
+  AddTorrentsTrackersOptions,
   DeleteTorrentsOptions,
   MoveTorrentsOptions,
   SetTorrentContentsPropertiesOptions,
@@ -246,6 +247,42 @@ class DelugeClientGatewayService extends BaseClientGatewayService implements Cli
         trackers.map((url) => ({url, tier: 0})),
       )
       .then(this.processClientRequestSuccess, this.processClientRequestError);
+  }
+
+  async addTorrentsTrackers({hashes, trackers}: AddTorrentsTrackersOptions): Promise<void> {
+    // Fetch the current tracker list per hash, concatenate the
+    // supplied trackers, and write the merged list back via
+    // core.set_torrent_trackers. The Deluge RPC has no native
+    // 'append' verb, so this is the closest equivalent.
+    await Promise.all(
+      hashes.map(async (hash) => {
+        const existing = await this.clientRequestManager
+          .coreGetTorrentsStatus(['trackers'], {id: [hash]}, false)
+          .then((statuses: Record<string, any>) => {
+            const entry = statuses?.[hash];
+            return (entry?.trackers ?? []).map((tracker: {url: string}) => ({
+              url: tracker.url,
+              tier: 0,
+            }));
+          })
+          .catch(() => []);
+
+        const seen = new Set<string>(existing.map((entry: {url: string}) => entry.url.toLowerCase()));
+        const additions = trackers
+          .filter((url) => !seen.has(url.toLowerCase()))
+          .map((url) => ({url, tier: 0}));
+
+        const merged = [...existing, ...additions];
+
+        if (merged.length === 0) {
+          return;
+        }
+
+        await this.clientRequestManager
+          .coreSetTorrentTrackers([hash], merged)
+          .then(this.processClientRequestSuccess, this.processClientRequestError);
+      }),
+    );
   }
 
   async setTorrentContentsPriority(

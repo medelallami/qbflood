@@ -1,6 +1,7 @@
 import type {
   AddTorrentByFileOptions,
   AddTorrentByURLOptions,
+  AddTorrentsTrackersOptions,
   ReannounceTorrentsOptions,
   SetTorrentsTagsOptions,
 } from '@shared/schema/api/torrents';
@@ -153,6 +154,7 @@ export interface ClientGatewayService extends TypedEmitter<ClientGatewayServiceE
    * @return - Rejects with error.
    */
   setTorrentsTrackers(options: SetTorrentsTrackersOptions): Promise<void>;
+  addTorrentsTrackers(options: AddTorrentsTrackersOptions): Promise<void>;
 
   /**
    * Sets priority of contents of a torrent

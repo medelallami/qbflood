@@ -6,6 +6,7 @@ import send from '@fastify/send';
 import {normalizeTorrentUrl} from '@server/util/torrentUrlUtil';
 import type {ContentToken} from '@shared/schema/api/torrents';
 import {CreateTorrentOptionsSchema} from '@shared/types/api/torrents';
+import type {AddTorrentsTrackersOptions} from '@shared/types/api/torrents';
 import contentDisposition from 'content-disposition';
 import type {CreateTorrentOptions, TorrentInput} from 'create-torrent';
 import type {FastifyInstance} from 'fastify';
@@ -18,6 +19,7 @@ import {strictObject, string, z} from 'zod';
 import {
   addTorrentByFileSchema,
   addTorrentByURLSchema,
+  addTorrentsTrackersSchema,
   checkTorrentsSchema,
   deleteTorrentsSchema,
   moveTorrentsSchema,
@@ -586,6 +588,29 @@ const torrentsRoutes = async (fastify: FastifyInstance) => {
     async (request) => {
       const authedContext = getRequiredAuthContext(request);
       await authedContext.services.clientGatewayService.setTorrentsTrackers(request.body);
+      authedContext.services.torrentService.fetchTorrentList();
+    },
+  );
+
+  typedFastify.patch(
+    '/trackers/add',
+    {
+      schema: {
+        summary: 'Append torrent trackers',
+        description: 'Append tracker URLs to existing torrents without disabling current trackers.',
+        tags: ['Torrents'],
+        security: [{User: []}],
+        body: addTorrentsTrackersSchema,
+        response: {
+          200: emptyResponseSchema,
+          500: errorResponseSchema,
+        },
+      },
+    },
+    async (request) => {
+      const authedContext = getRequiredAuthContext(request);
+      const options: AddTorrentsTrackersOptions = request.body;
+      await authedContext.services.clientGatewayService.addTorrentsTrackers(options);
       authedContext.services.torrentService.fetchTorrentList();
     },
   );

@@ -20,6 +20,7 @@ import type {
   SetTorrentsTrackersOptions,
   StartTorrentsOptions,
   StopTorrentsOptions,
+  AddTorrentsTrackersOptions,
 } from '@shared/types/api/torrents';
 import type {ClientSettings} from '@shared/types/ClientSettings';
 import type {TorrentList, TorrentListSummary, TorrentProperties} from '@shared/types/Torrent';
@@ -215,6 +216,17 @@ class NeptuneClientGatewayService extends ClientGatewayService {
         );
 
         await Promise.all(trackers.map((url) => this.clientRequestManager.addTorrentTracker(lowerHash, url)));
+      }),
+    );
+  }
+
+  async addTorrentsTrackers({hashes, trackers}: AddTorrentsTrackersOptions): Promise<void> {
+    await Promise.all(
+      hashes.map(async (hash) => {
+        const lowerHash = hash.toLowerCase();
+        await Promise.all(
+          trackers.map((url) => this.clientRequestManager.addTorrentTracker(lowerHash, url)),
+        );
       }),
     );
   }

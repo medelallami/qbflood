@@ -101,6 +101,14 @@ export interface SetTorrentsTrackersOptions {
   trackers: Array<string>;
 }
 
+// PATCH /api/torrents/trackers/add
+export interface AddTorrentsTrackersOptions {
+  // An array of string representing hashes of torrents to operate on
+  hashes: Array<TorrentProperties['hash']>;
+  // Tracker URLs to append; existing entries are preserved.
+  trackers: Array<string>;
+}
+
 // PATCH /api/torrents/{hash}/contents
 export interface SetTorrentContentsPropertiesOptions {
   // An array of number representing indices of contents of a torrent

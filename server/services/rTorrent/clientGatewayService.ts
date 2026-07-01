@@ -19,6 +19,7 @@ import type {
   SetTorrentsPriorityOptions,
   SetTorrentsSequentialOptions,
   SetTorrentsTrackersOptions,
+  AddTorrentsTrackersOptions,
   StartTorrentsOptions,
   StopTorrentsOptions,
 } from '@shared/types/api/torrents';
@@ -33,7 +34,7 @@ import sanitize from 'sanitize-filename';
 
 import {fetchUrls} from '../../util/fetchUtil';
 import {cleanupEmptyDirectories, isAllowedPath, sanitizePath} from '../../util/fileUtil';
-import {getComment, setCompleted, setTrackers} from '../../util/torrentFileUtil';
+import {getComment, setCompleted, setTrackers, addTrackers} from '../../util/torrentFileUtil';
 import BaseClientGatewayService, {type ClientGatewayService} from '../clientGatewayService';
 import * as geoip from '../geoip';
 import ClientRequestManager from './clientRequestManager';
@@ -784,6 +785,36 @@ class RTorrentClientGatewayService extends BaseClientGatewayService implements C
         ),
       ),
     );
+  }
+
+  async addTorrentsTrackers({hashes, trackers}: AddTorrentsTrackersOptions): Promise<void> {
+    // Write through the session file with addTrackers (which
+    // merges against the existing announce-list instead of
+    // replacing it) and re-load the torrent so rtorrent picks
+    // up the new announce-list without dropping the existing
+    // connections.
+    const {path: sessionDirectory, case: torrentCase} = await this.getClientSessionDirectory();
+
+    await Promise.all(
+      [...new Set(hashes)].map(async (hash) => {
+        await addTrackers(
+          path.join(
+            sessionDirectory,
+            sanitize(`${torrentCase === 'lower' ? hash.toLowerCase() : hash.toUpperCase()}.torrent`),
+          ),
+          trackers,
+        );
+      }),
+    );
+
+    await this.clientRequestManager
+      .methodCall('system.multicall', [
+        [...new Set(hashes)].map((hash) => ({
+          methodName: 'd.load_start',
+          params: [hash],
+        })),
+      ])
+      .then(this.processClientRequestSuccess, this.processRTorrentRequestError);
   }
 
   async setTorrentContentsPriority(

@@ -130,6 +130,12 @@ export const setTorrentsTrackersSchema = strictObject({
   trackers: array(string()),
 }).strip();
 
+// PATCH /api/torrents/trackers/add
+export const addTorrentsTrackersSchema = strictObject({
+  hashes: torrentHashesSchema,
+  trackers: array(string().min(1)),
+}).strip();
+
 // PATCH /api/torrents/{hash}/contents
 export const setTorrentContentsPropertiesSchema = strictObject({
   indices: array(number().int().nonnegative()).nonempty(),

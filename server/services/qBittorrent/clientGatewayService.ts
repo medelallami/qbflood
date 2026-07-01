@@ -23,6 +23,7 @@ import type {
   StartTorrentsOptions,
   StopTorrentsOptions,
 } from '@shared/types/api/torrents';
+import type {AddTorrentsTrackersOptions} from '@shared/types/api/torrents';
 import type {ClientSettings} from '@shared/types/ClientSettings';
 import type {TorrentList, TorrentListSummary, TorrentProperties} from '@shared/types/Torrent';
 import type {TorrentContent} from '@shared/types/TorrentContent';
@@ -358,6 +359,17 @@ class QBittorrentClientGatewayService extends BaseClientGatewayService implement
         await this.clientRequestManager.torrentsRemoveTrackers(hash, currentTrackerURLs);
 
         return this.clientRequestManager
+          .torrentsAddTrackers(hash, trackers)
+          .then(this.processClientRequestSuccess, this.processClientRequestError)
+          .then(() => delete this.cachedProperties[hash.toLowerCase()]);
+      }),
+    ).then(() => undefined);
+  }
+
+  async addTorrentsTrackers({hashes, trackers}: AddTorrentsTrackersOptions): Promise<void> {
+    await Promise.all(
+      hashes.map(async (hash) => {
+        await this.clientRequestManager
           .torrentsAddTrackers(hash, trackers)
           .then(this.processClientRequestSuccess, this.processClientRequestError)
           .then(() => delete this.cachedProperties[hash.toLowerCase()]);

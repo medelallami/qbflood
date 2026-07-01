@@ -12,6 +12,7 @@ import type {SetClientSettingsOptions} from '@shared/types/api/client';
 import type {
   CheckTorrentsOptions,
   DeleteTorrentsOptions,
+  AddTorrentsTrackersOptions,
   MoveTorrentsOptions,
   SetTorrentContentsPropertiesOptions,
   SetTorrentsPriorityOptions,
@@ -314,6 +315,12 @@ class TransmissionClientGatewayService extends BaseClientGatewayService implemen
         ),
       );
 
+    return this.clientRequestManager
+      .setTorrentsProperties({ids: hashes, trackerAdd: trackers})
+      .then(this.processClientRequestSuccess, this.processClientRequestError);
+  }
+
+  async addTorrentsTrackers({hashes, trackers}: AddTorrentsTrackersOptions): Promise<void> {
     return this.clientRequestManager
       .setTorrentsProperties({ids: hashes, trackerAdd: trackers})
       .then(this.processClientRequestSuccess, this.processClientRequestError);

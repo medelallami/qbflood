@@ -80,6 +80,99 @@ export const setTrackers = async (torrent: string, trackers: Array<string>): Pro
   return true;
 };
 
+/**
+ * Adds new tracker URLs to an existing torrent file's announce-list.
+ * Existing trackers are kept; new ones are appended in the order
+ * given. The announce-list is normalised: identical trackers already
+ * present (case-insensitive, trailing-slash-tolerant) are not duplicated.
+ *
+ * @return true on a successful write, false otherwise (or when input
+ * is unparseable).
+ */
+export const addTrackers = async (torrent: string, trackers: Array<string>): Promise<boolean> => {
+  const torrentData = await openAndDecodeTorrent(torrent);
+
+  if (torrentData == null) {
+    return false;
+  }
+
+  if (trackers.length === 0) {
+    return true;
+  }
+
+  const normalise = (url: string): string => {
+    const trimTrailingSlash = url.replace(/\/+$/u, '');
+    return trimTrailingSlash.toLowerCase();
+  };
+
+  const seen = new Set<string>();
+
+  const existing: Array<Array<string>> = [];
+  const existingRaw = torrentData['announce-list'];
+  if (Array.isArray(existingRaw)) {
+    existingRaw.forEach((tier) => {
+      if (Array.isArray(tier)) {
+        const flat: Array<string> = [];
+        tier.forEach((tracker) => {
+          if (Buffer.isBuffer(tracker)) {
+            const text = tracker.toString();
+            flat.push(text);
+            seen.add(normalise(text));
+          }
+        });
+        if (flat.length > 0) {
+          existing.push(flat);
+        }
+      } else if (Buffer.isBuffer(tier)) {
+        const text = tier.toString();
+        existing.push([text]);
+        seen.add(normalise(text));
+      }
+    });
+  }
+
+  const fallback = torrentData['announce'];
+  let primary: string | null = null;
+  if (Buffer.isBuffer(fallback)) {
+    primary = fallback.toString();
+    seen.add(normalise(primary));
+  }
+
+  const appendedTiers: Array<Array<string>> = [];
+  trackers.forEach((tracker, index) => {
+    const normalised = normalise(tracker);
+    if (seen.has(normalised)) {
+      return;
+    }
+    seen.add(normalised);
+    if (index === 0 && primary == null && existing.length === 0) {
+      primary = tracker;
+    } else {
+      appendedTiers.push([tracker]);
+    }
+  });
+
+  if (appendedTiers.length === 0) {
+    return true;
+  }
+
+  const merged: Array<Array<string>> = [...existing, ...appendedTiers];
+  torrentData['announce-list'] = merged.map((tier) =>
+    tier.map((entry) => Buffer.from(entry)),
+  );
+  if (primary != null) {
+    torrentData['announce'] = Buffer.from(primary);
+  }
+
+  try {
+    await fs.promises.writeFile(torrent, bencode.encode(torrentData));
+  } catch {
+    return false;
+  }
+
+  return true;
+};
+
 export const setCompleted = async (torrent: Buffer, destination: string, isBasePath = true): Promise<Buffer | null> => {
   const torrentData: TorrentFile | null = await bencode.decode(torrent);
 
